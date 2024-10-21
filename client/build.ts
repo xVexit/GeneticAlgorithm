@@ -7,6 +7,7 @@ try {
     await build({
         entryPoints: [ENTRY_PATH],
         outdir: BUILD_PATH,
+        bundle: true,
         platform: "browser",
     });
     console.log("✔ Build completed:", BUILD_PATH);
