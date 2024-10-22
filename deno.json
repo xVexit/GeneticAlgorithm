@@ -1,8 +1,0 @@
-{
-  "tasks": {
-    "build": "deno run -A client/build.ts"
-  },
-  "imports": {
-    "@oak/oak": "jsr:@oak/oak@^17.1.0"
-  }
-}
