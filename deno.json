@@ -1,6 +1,7 @@
 {
   "tasks": {
-    "build": "deno run -A client/build.ts"
+    "build": "deno run -A client/build.ts",
+    "start": "deno run --allow-net --allow-read server/src/main.ts"
   },
   "imports": {
     "@oak/oak": "jsr:@oak/oak@^17.1.0"

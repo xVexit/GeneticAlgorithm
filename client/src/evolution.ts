@@ -1,0 +1,1 @@
+// tu beda funkcji i algorytm ewolucji
