@@ -226,6 +226,7 @@ export function createVertexArray(
     context.bindVertexArray(vertexArray);
     attributes.forEach(
         (attribute) => {
+            context.enableVertexAttribArray(attribute.index);
             context.bindBuffer(context.ARRAY_BUFFER, attribute.buffer);
             context.vertexAttribPointer(
                 attribute.index,
@@ -387,6 +388,15 @@ export function drawArrays(
             width?: number;
             height?: number;
         };
+        clear?: {
+            color?: {
+                r: number;
+                g: number;
+                b: number;
+                a: number;
+            };
+            depth?: number;
+        };
         textures?: {
             unit: number;
             texture: Texture;
@@ -396,22 +406,76 @@ export function drawArrays(
     context.bindFramebuffer(context.FRAMEBUFFER, options.framebuffer || null);
     context.useProgram(program);
     context.bindVertexArray(vertexArray);
-    context.viewport(
-        options.viewport?.x || 0,
-        options.viewport?.y || 0,
-        options.viewport?.width || context.canvas.width,
-        options.viewport?.height || context.canvas.height,
-    );
 
-    if (options.textures) {
-        options.textures.forEach(({ unit, texture }) => {
-            context.activeTexture(context.TEXTURE0 + unit);
-            context.bindTexture(
-                context.TEXTURE_2D,
-                texture,
-            );
-        });
-    }
+    checkViewportOptions(context, options.viewport);
+    checkClearOptions(context, options.clear);
+    checkTexturesOptions(context, options.textures);
 
     context.drawArrays(context.TRIANGLES, 0, vertices);
+}
+
+function checkViewportOptions(
+    context: Context,
+    viewport?: {
+        x?: number;
+        y?: number;
+        width?: number;
+        height?: number;
+    },
+): void {
+    if (viewport) {
+        context.viewport(
+            viewport.x || 0,
+            viewport.y || 0,
+            viewport.width || context.canvas.width,
+            viewport.height || context.canvas.height,
+        );
+    }
+}
+
+function checkTexturesOptions(
+    context: Context,
+    textures?: {
+        unit: number;
+        texture: Texture;
+    }[],
+): void {
+    if (textures) {
+        textures.forEach(
+            ({ unit, texture }) => {
+                context.activeTexture(context.TEXTURE0 + unit);
+                context.bindTexture(
+                    context.TEXTURE_2D,
+                    texture,
+                );
+            },
+        );
+    }
+}
+
+function checkClearOptions(
+    context: Context,
+    clear?: {
+        color?: {
+            r: number;
+            g: number;
+            b: number;
+            a: number;
+        };
+        depth?: number;
+    },
+): void {
+    if (clear) {
+        const { color, depth } = clear;
+        if (color) {
+            context.clearColor(color.r, color.g, color.b, color.a);
+        }
+        if (depth) {
+            context.clearDepth(depth);
+        }
+        context.clear(
+            (clear.color ? context.COLOR_BUFFER_BIT : 0) |
+                (clear.depth ? context.DEPTH_BUFFER_BIT : 0),
+        );
+    }
 }
