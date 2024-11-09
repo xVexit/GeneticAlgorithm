@@ -132,6 +132,7 @@ export function createProgram(
 
     shaders.forEach((shader) => context.attachShader(program, shader));
     context.linkProgram(program);
+    shaders.forEach((shader) => context.detachShader(program, shader));
 
     if (context.getProgramParameter(program, context.LINK_STATUS)) {
         return [program, () => context.deleteProgram(program)];
