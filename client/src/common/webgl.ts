@@ -5,6 +5,7 @@ export type Buffer = WebGLBuffer;
 export type VertexArray = WebGLVertexArrayObject;
 export type Texture = WebGLTexture;
 export type Framebuffer = WebGLFramebuffer;
+export type UniformLocation = WebGLUniformLocation;
 
 export type ResourceWithDeleteFunction<T> = [T, () => void];
 
@@ -79,6 +80,30 @@ export const enum ShaderType {
 
 export const VERTEX_SHADER = ShaderType.VERTEX_SHADER;
 export const FRAGMENT_SHADER = ShaderType.FRAGMENT_SHADER;
+
+/**
+ * Enumeration representing uniform types supported by WebGL.
+ * @enum {number} UniformType
+ */
+export const enum UniformType {
+    UNIFORM_INT,
+    UNIFORM_FLOAT,
+    UNIFORM_INT2,
+    UNIFORM_FLOAT2,
+    UNIFORM_INT3,
+    UNIFORM_FLOAT3,
+    UNIFORM_INT4,
+    UNIFORM_FLOAT4,
+}
+
+export const UNIFORM_INT = UniformType.UNIFORM_INT;
+export const UNIFORM_FLOAT = UniformType.UNIFORM_FLOAT;
+export const UNIFORM_INT2 = UniformType.UNIFORM_INT2;
+export const UNIFORM_FLOAT2 = UniformType.UNIFORM_FLOAT2;
+export const UNIFORM_INT3 = UniformType.UNIFORM_INT3;
+export const UNIFORM_FLOAT3 = UniformType.UNIFORM_FLOAT3;
+export const UNIFORM_INT4 = UniformType.UNIFORM_INT4;
+export const UNIFORM_FLOAT4 = UniformType.UNIFORM_FLOAT4;
 
 /**
  * Creates and compiles a WebGL shader, then returns it with a delete function.
@@ -336,6 +361,30 @@ export function createFramebuffer(
 }
 
 /**
+ * Selects a WebGL uniform location from the specified WebGL program.
+ *
+ * @param context - The WebGL context.
+ * @param program - The WebGL program.
+ * @param uniform - The uniform variable name.
+ *
+ * @throws When is unable to select the uniform location.
+ * @returns UniformLocation The uniform location from the specified WebGL program.
+ */
+export function selectUniform(
+    context: Context,
+    program: Program,
+    uniform: string,
+): UniformLocation {
+    const uniformLocation: UniformLocation | null = context
+        .getUniformLocation(program, uniform);
+    if (uniformLocation) {
+        return uniformLocation;
+    } else {
+        throw new Error(`Failed to select a uniform: ${uniform}`);
+    }
+}
+
+/**
  * Updates a WebGL buffer contents with specified data.
  *
  * @param context - The WebGL context used for copying.
@@ -372,9 +421,11 @@ export function updateBuffer(
  * @param vertices - The number of vertices.
  * @param options - The WebGL drawing options:
  *
- * - viewport: The viewport dimensions (default: [0, 0, canvas.width, canvas.height]).
- * - textures: The WebGL textures with specified units.
  * - framebuffer: The WebGL framebuffer used for drawing (default: null).
+ * - viewport: The viewport dimensions (default: [0, 0, canvas.width, canvas.height]).
+ * - clear: The WebGL framebuffer clear options.
+ * - textures: The WebGL textures with specified units.
+ * - uniforms: The WebGL uniforms with specified values and locations.
  */
 export function drawArrays(
     context: Context,
@@ -402,6 +453,16 @@ export function drawArrays(
             unit: number;
             texture: Texture;
         }[];
+        uniforms?: {
+            location: UniformLocation;
+            type: UniformType;
+            value: {
+                x?: number;
+                y?: number;
+                z?: number;
+                w?: number;
+            };
+        }[];
     } = {},
 ): void {
     context.bindFramebuffer(context.FRAMEBUFFER, options.framebuffer || null);
@@ -411,6 +472,7 @@ export function drawArrays(
     checkViewportOptions(context, options.viewport);
     checkClearOptions(context, options.clear);
     checkTexturesOptions(context, options.textures);
+    checkUniformsOptions(context, options.uniforms);
 
     context.drawArrays(context.TRIANGLES, 0, vertices);
 }
@@ -478,5 +540,88 @@ function checkClearOptions(
             (clear.color ? context.COLOR_BUFFER_BIT : 0) |
                 (clear.depth ? context.DEPTH_BUFFER_BIT : 0),
         );
+    }
+}
+
+function checkUniformsOptions(
+    context: Context,
+    uniforms?: {
+        location: UniformLocation;
+        type: UniformType;
+        value: {
+            x?: number;
+            y?: number;
+            z?: number;
+            w?: number;
+        };
+    }[],
+): void {
+    if (uniforms) {
+        uniforms.forEach(({ location, type, value }) => {
+            switch (type) {
+                case UniformType.UNIFORM_INT:
+                    context.uniform1i(
+                        location,
+                        value.x || 0,
+                    );
+                    break;
+                case UniformType.UNIFORM_FLOAT:
+                    context.uniform1f(
+                        location,
+                        value.x || 0,
+                    );
+                    break;
+                case UniformType.UNIFORM_INT2:
+                    context.uniform2i(
+                        location,
+                        value.x || 0,
+                        value.y || 0,
+                    );
+                    break;
+                case UniformType.UNIFORM_FLOAT2:
+                    context.uniform2f(
+                        location,
+                        value.x || 0,
+                        value.y || 0,
+                    );
+                    break;
+                case UniformType.UNIFORM_INT3:
+                    context.uniform3i(
+                        location,
+                        value.x || 0,
+                        value.y || 0,
+                        value.z || 0,
+                    );
+                    break;
+                case UniformType.UNIFORM_FLOAT3:
+                    context.uniform3f(
+                        location,
+                        value.x || 0,
+                        value.y || 0,
+                        value.z || 0,
+                    );
+                    break;
+                case UniformType.UNIFORM_INT4:
+                    context.uniform4i(
+                        location,
+                        value.x || 0,
+                        value.y || 0,
+                        value.z || 0,
+                        value.w || 0,
+                    );
+                    break;
+                case UniformType.UNIFORM_FLOAT4:
+                    context.uniform4f(
+                        location,
+                        value.x || 0,
+                        value.y || 0,
+                        value.z || 0,
+                        value.w || 0,
+                    );
+                    break;
+                default:
+                    break;
+            }
+        });
     }
 }
