@@ -44,6 +44,26 @@ export const RGB = PixelFormat.RGB;
 export const RGBA = PixelFormat.RGBA;
 
 /**
+ * Enumeration representing texture filters supported by WebGL.
+ * @enum {number} UniformType
+ */
+export const enum TextureFilter {
+    NEAREST = 0x2600,
+    LINEAR = 0x2601,
+    NEAREST_MIPMAP_NEAREST = 0x2700,
+    LINEAR_MIPMAP_NEAREST = 0x2701,
+    NEAREST_MIPMAP_LINEAR = 0x2702,
+    LINEAR_MIPMAP_LINEAR = 0x2703,
+}
+
+export const NEAREST = TextureFilter.NEAREST;
+export const LINEAR = TextureFilter.LINEAR;
+export const NEAREST_MIPMAP_NEAREST = TextureFilter.NEAREST_MIPMAP_NEAREST;
+export const LINEAR_MIPMAP_NEAREST = TextureFilter.LINEAR_MIPMAP_NEAREST;
+export const NEAREST_MIPMAP_LINEAR = TextureFilter.NEAREST_MIPMAP_LINEAR;
+export const LINEAR_MIPMAP_LINEAR = TextureFilter.LINEAR_MIPMAP_LINEAR;
+
+/**
  * Enumeration representing buffer types supported by WebGL.
  * @enum {number} BufferType
  */
@@ -281,6 +301,7 @@ export function createVertexArray(
  * - level: The WebGL texture level (default: 0).
  * - border: The WebGL texture border (default: 0).
  * - pixels: The texture pixels array to import (default: null).
+ * - filters: The WebGL texture filters options.
  *
  * @throws When is unable to create the WebGL texture.
  * @returns {ResourceWithDeleteFunction<Texture>} The texture with the delete function.
@@ -295,6 +316,10 @@ export function createTexture(
         level?: number;
         border?: number;
         pixels?: ArrayBufferView;
+        filters?: {
+            minifying?: TextureFilter;
+            magnifying?: TextureFilter;
+        };
     } = {},
 ): ResourceWithDeleteFunction<Texture> {
     const texture: Texture | null = context.createTexture();
@@ -314,6 +339,24 @@ export function createTexture(
         options.type || UNSIGNED_BYTE,
         options.pixels || null,
     );
+
+    if (options.filters) {
+        const { minifying, magnifying } = options.filters;
+        if (minifying) {
+            context.texParameteri(
+                context.TEXTURE_2D,
+                context.TEXTURE_MIN_FILTER,
+                minifying,
+            );
+        }
+        if (magnifying) {
+            context.texParameteri(
+                context.TEXTURE_2D,
+                context.TEXTURE_MAG_FILTER,
+                magnifying,
+            );
+        }
+    }
 
     return [texture, () => context.deleteTexture(texture)];
 }
