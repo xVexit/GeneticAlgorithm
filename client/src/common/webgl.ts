@@ -296,7 +296,7 @@ export function createVertexArray(
  * @param height - The texture height in pixels.
  * @param options - The WebGL texture options:
  *
- * - format: The WebGL texture format (default: RGB).
+ * - format: The WebGL texture format (default: RGBA).
  * - type: The WebGL texture type (default: UNSIGNED_BYTE).
  * - level: The WebGL texture level (default: 0).
  * - border: The WebGL texture border (default: 0).
@@ -331,11 +331,11 @@ export function createTexture(
     context.texImage2D(
         context.TEXTURE_2D,
         options.level || 0,
-        options.format || RGB,
+        options.format || RGBA,
         width,
         height,
         options.border || 0,
-        options.format || RGB,
+        options.format || RGBA,
         options.type || UNSIGNED_BYTE,
         options.pixels || null,
     );
@@ -425,6 +425,51 @@ export function selectUniform(
     } else {
         throw new Error(`Failed to select a uniform: ${uniform}`);
     }
+}
+
+/**
+ * Selects an array of pixels from the specified WebGL framebuffer.
+ * 
+ * @param context - The WebGL context.
+ * @param framebuffer - The WebGL framebuffer.
+ * @param width - The width of the region.
+ * @param height - The height of the region.
+ * @param options - The WebGL reading options:
+ * 
+ * - type: The WebGL texture type (default: UNSIGNED_BYTE).
+ * - format: The WebGL texture format (default: RGBA).
+ * - offset: The offset of the region (default: {x: 0, y: 0}).
+ * 
+ * @returns {Uint8Array} An array of pixels from the specified WebGL framebuffer.
+ */
+export function selectPixels(
+    context: Context,
+    framebuffer: Framebuffer,
+    width: number,
+    height: number,
+    options: {
+        type?: DataType;
+        format?: PixelFormat;
+        offset?: {
+            x: number;
+            y: number;
+        };
+    } = {},
+): Uint8Array {
+    const pixels = new Uint8Array(width * height * 4);
+
+    context.bindFramebuffer(context.FRAMEBUFFER, framebuffer);
+    context.readPixels(
+        options.offset?.x || 0,
+        options.offset?.y || 0,
+        width,
+        height,
+        options.format || RGBA,
+        options.type || UNSIGNED_BYTE,
+        pixels,
+    );
+
+    return pixels;
 }
 
 /**

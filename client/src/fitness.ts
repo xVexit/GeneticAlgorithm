@@ -1,4 +1,5 @@
 import * as WebGL from "./common/webgl.ts";
+import { createImagesRenderFunction } from "./images.ts";
 import { FRAGMENT_SHADER_FITNESS, VERTEX_SHADER_FITNESS } from "./shaders.ts";
 
 /**
@@ -14,7 +15,8 @@ import { FRAGMENT_SHADER_FITNESS, VERTEX_SHADER_FITNESS } from "./shaders.ts";
  * @param {number} population - The number of inviduals.
  * @param {WebGL.Texture} reference - The WebGL texture of the reference image.
  *
- * @returns {function(Float32Array): Float32Array} - The fitness function.
+ * @throws When is unable to create WebGL resoureces.
+ * @returns {WebGL.ResourceWithDeleteFunction<(vertices: Float32Array) => Float32Array>}
  */
 export function createFitnessFunction(
     context: WebGL.Context,
@@ -22,10 +24,134 @@ export function createFitnessFunction(
     height: number,
     triangles: number,
     population: number,
-): (vertices: Float32Array) => Float32Array {
-    // TODO: Implement the rendering and fitness calculation
+    reference: WebGL.Texture,
+): WebGL.ResourceWithDeleteFunction<(vertices: Float32Array) => Float32Array> {
+    const [textureImages, deleteTextureImages] = WebGL
+        .createTexture(
+            context,
+            width * population,
+            height,
+            {
+                format: WebGL.RGBA,
+                filters: {
+                    minifying: WebGL.NEAREST,
+                    magnifying: WebGL.NEAREST,
+                },
+            },
+        );
+
+    const [framebufferImages, deleteFramebufferImages] = WebGL
+        .createFramebuffer(
+            context,
+            [
+                {
+                    index: 0,
+                    texture: textureImages,
+                },
+            ],
+        );
+
+    const [textureFitness, deleteTextureFitness] = WebGL
+        .createTexture(
+            context,
+            width * population,
+            1,
+            {
+                format: WebGL.RGBA,
+                filters: {
+                    minifying: WebGL.NEAREST,
+                    magnifying: WebGL.NEAREST,
+                },
+            },
+        );
+
+    const [framebufferFitness, deleteFramebufferFitness] = WebGL
+        .createFramebuffer(
+            context,
+            [
+                {
+                    index: 0,
+                    texture: textureFitness,
+                },
+            ],
+        );
+
+    const [callImagesRenderFunction, deleteImagesRenderFunction] =
+        createImagesRenderFunction(
+            context,
+            width * population,
+            height,
+            triangles * 3,
+            framebufferImages,
+        );
+
+    const [callFitnessComputeFunction, deleteFitnessComputeFunction] =
+        createFitnessComputeFunction(
+            context,
+            width,
+            height,
+            population,
+            reference,
+            framebufferFitness,
+        );
+
+    const setupFitnessFromPixels = (pixels: Uint8Array): Float32Array => {
+        const fitness: Float32Array = new Float32Array(population);
+
+        for (let i = 0; i < population; i++) {
+            for (let j = 0; j < width * 4; j++) {
+                if (j % 4 < 3) {
+                    fitness[i] += pixels[j + i * (width * 4)] / (width * 3);
+                }
+            }
+        }
+
+        return fitness;
+    };
+
+    return [
+        (vertices: Float32Array): Float32Array => {
+            callImagesRenderFunction(vertices);
+            callFitnessComputeFunction(textureImages);
+
+            return setupFitnessFromPixels(
+                WebGL.selectPixels(
+                    context,
+                    framebufferFitness,
+                    width * population,
+                    1,
+                    {
+                        type: WebGL.UNSIGNED_BYTE,
+                        format: WebGL.RGBA,
+                    },
+                ),
+            );
+        },
+        (): void => {
+            deleteImagesRenderFunction();
+            deleteTextureImages();
+            deleteFramebufferImages();
+            deleteFitnessComputeFunction();
+            deleteTextureFitness();
+            deleteFramebufferFitness();
+        },
+    ];
 }
 
+/**
+ * Creates a fitness compute function that evaluates fitness values of the generated
+ * texture. The function renders an image containing vertically averaged fitness values.
+ *
+ * @param {WebGL.Context} context - The WebGL context used for rendering.
+ * @param {number} width - The width of the image in pixels.
+ * @param {number} height - The height of the image in pixels.
+ * @param {number} population - The number of inviduals.
+ * @param {WebGL.Texture} reference - The WebGL texture of the reference image.
+ * @param {WebGL.Framebuffer} framebuffer - The WebGL framebuffer used for rendering.
+ *
+ * @throws When is unable to create WebGL resoureces.
+ * @returns {WebGL.ResourceWithDeleteFunction<(generated: WebGL.Texture) => void>}
+ */
 export function createFitnessComputeFunction(
     context: WebGL.Context,
     width: number,

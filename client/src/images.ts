@@ -1,7 +1,19 @@
 import * as WebGL from "./common/webgl.ts";
 import { FRAGMENT_SHADER_IMAGES, VERTEX_SHADER_IMAGES } from "./shaders.ts";
 
-export function createRenderFunction(
+/**
+ * Creates a function rendering triangles to the specified framebuffer.
+ * 
+ * @param {WebGL.Context} context - The WebGL context used for rendering.
+ * @param {number} width - The width of the viewport in pixels.
+ * @param {number} height - The height of the viewport in pixels.
+ * @param {nubmer} vertices - The number of vertices.
+ * @param {WebGL.Framebuffer} framebuffer - The WebGL framebuffer used for rendering.
+ * 
+ * @throws When is unable to create WebGL resources.
+ * @returns {WebGL.ResourceWithDeleteFunction<(data: Float32Array) => void>}
+ */
+export function createImagesRenderFunction(
     context: WebGL.Context,
     width: number,
     height: number,
