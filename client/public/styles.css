@@ -1,0 +1,52 @@
+.main {
+    position: absolute;
+    display: flex;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    color: #e8e6e1;
+    background-color: #121216;
+}
+
+.sidebar-title {
+    text-align: center;
+    margin-top: 32px;
+    margin-bottom: 0px;
+}
+
+.sidebar-container {
+    width: 20%;
+    height: 100%;
+    color: #121216;
+    background-color: #e8e6e1;
+}
+
+.slider {
+    width: 70%;
+    accent-color: #121216;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.slider-title {
+    text-align: center;
+    margin-top: 8px;
+    margin-bottom: 0px;
+}
+
+.slider-limit {
+    text-align: center;
+    width: 15%;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.slider-container {
+    display: flex;
+}
+
+.sliders-container {
+    position: relative;
+    top: 32px;
+}
