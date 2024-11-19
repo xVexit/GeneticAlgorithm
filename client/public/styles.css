@@ -11,6 +11,7 @@
 
 .sidebar-title {
     text-align: center;
+    user-select: none;
     margin-top: 32px;
     margin-bottom: 0px;
 }
@@ -31,12 +32,14 @@
 
 .slider-title {
     text-align: center;
+    user-select: none;
     margin-top: 8px;
     margin-bottom: 0px;
 }
 
 .slider-limit {
     text-align: center;
+    user-select: none;
     width: 15%;
     margin-top: 0px;
     margin-bottom: 0px;
