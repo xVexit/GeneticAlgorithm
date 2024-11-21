@@ -1,45 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <title>Genetic Algorithm</title>
-        <meta charset="UTF-8" />
-        <link rel="stylesheet" href="styles.css" />
-    </head>
-    <body>
-        <script type="module" src="build/main.js"></script>
-        <div class="main">
-            <div class="sidebar-section color-white background-black">
-                <h1 class="text-center margin-big">GENETIC ALGORITHM</h1>
-                <div class="margin-big">
-                    <h5 class="text-center margin-small">POPULATION (#)</h5>
-                    <div style="display: flex;">
-                        <h5 class="slider-limit-section text-center margin-zero">1</h5>
-                        <input class="slider-section margin-zero accent-other" type="range" min="0" max="100" step="5"></input>
-                        <h5 class="slider-limit-section text-center margin-zero">100</h5>
-                    </div>
-                    <h5 class="text-center margin-small">TRIANGLES (#)</h5>
-                    <div style="display: flex;">
-                        <h5 class="slider-limit-section text-center margin-zero">1</h5>
-                        <input class="slider-section margin-zero accent-other" type="range" min="0" max="1000" step="50"></input>
-                        <h5 class="slider-limit-section text-center margin-zero">1000</h5>
-                    </div>
-                    <h5 class="text-center margin-small">MUTATION FREQUENCY (#)</h5>
-                    <div style="display: flex;">
-                        <h5 class="slider-limit-section text-center margin-zero">0.0</h5>
-                        <input class="slider-section margin-zero accent-other" type="range" min="0" max="1" step="0.05"></input>
-                        <h5 class="slider-limit-section text-center margin-zero">1.0</h5>
-                    </div>
-                </div>
-            </div>
-            <div class="content-section" style="position: relative;">
-                <div class="center-column" style="position: absolute;">
-                    <h2 class="text-center margin-zero">UPLOAD YOUR IMAGE TO START THE ALGORITHM</h2>
-                    <h5 class="text-center margin-zero color-other">YOU CAN DRAG AND DROP IT HERE OR CLICK TO BROWSE</h5>
-                </div>
-                <div class="upload-section" style="position: absolute;">
-                    <input class="upload-section" style="opacity: 0;" type="file" accept="image/*"></input>
-                </div>
-            </div>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Genetic Algorithm</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <script type="module" src="build/main.js"></script>
+    <div class="main">
+      <div class="sidebar-section color-white background-black">
+        <h1 class="text-center margin-big">GENETIC ALGORITHM</h1>
+        <div class="margin-big">
+          <h5 class="text-center margin-small">POPULATION (#)</h5>
+          <div style="display: flex">
+            <h5 class="slider-limit-section text-center margin-zero">1</h5>
+            <input
+              class="slider-section margin-zero accent-other"
+              type="range"
+              min="0"
+              max="100"
+              step="5"
+            >
+            <h5 class="slider-limit-section text-center margin-zero">100</h5>
+          </div>
+          <h5 class="text-center margin-small">TRIANGLES (#)</h5>
+          <div style="display: flex">
+            <h5 class="slider-limit-section text-center margin-zero">1</h5>
+            <input
+              class="slider-section margin-zero accent-other"
+              type="range"
+              min="0"
+              max="1000"
+              step="50"
+            >
+            <h5 class="slider-limit-section text-center margin-zero">1000</h5>
+          </div>
+          <h5 class="text-center margin-small">MUTATION FREQUENCY (#)</h5>
+          <div style="display: flex">
+            <h5 class="slider-limit-section text-center margin-zero">0.0</h5>
+            <input
+              class="slider-section margin-zero accent-other"
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+            >
+            <h5 class="slider-limit-section text-center margin-zero">1.0</h5>
+          </div>
         </div>
-    </body>
+      </div>
+      <div class="content-section" style="position: relative">
+        <div>
+          <div class="center-column" style="position: absolute">
+            <h2 class="text-center margin-zero">
+              UPLOAD YOUR IMAGE TO START THE ALGORITHM
+            </h2>
+            <h5 class="text-center margin-zero color-other">
+              YOU CAN DRAG AND DROP IT HERE OR CLICK TO BROWSE
+            </h5>
+          </div>
+          <div class="upload-section" style="position: absolute">
+            <input
+              id="image-input"
+              class="upload-section"
+              style="opacity: 0"
+              type="file"
+              accept="image/*"
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
 </html>
