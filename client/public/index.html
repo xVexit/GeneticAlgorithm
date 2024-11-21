@@ -11,10 +11,13 @@
       <div class="sidebar-section color-white background-black">
         <h1 class="text-center margin-big">GENETIC ALGORITHM</h1>
         <div class="margin-big">
-          <h5 class="text-center margin-small">POPULATION (#)</h5>
+          <h5 id="slider-population-title" class="text-center margin-small">
+            LOADING...
+          </h5>
           <div style="display: flex">
             <h5 class="slider-limit-section text-center margin-zero">1</h5>
             <input
+              id="slider-population"
               class="slider-section margin-zero accent-other"
               type="range"
               min="0"
@@ -23,35 +26,71 @@
             >
             <h5 class="slider-limit-section text-center margin-zero">100</h5>
           </div>
-          <h5 class="text-center margin-small">TRIANGLES (#)</h5>
+          <h5 id="slider-triangles-title" class="text-center margin-small">
+            LOADING...
+          </h5>
           <div style="display: flex">
             <h5 class="slider-limit-section text-center margin-zero">1</h5>
             <input
+              id="slider-triangles"
               class="slider-section margin-zero accent-other"
               type="range"
               min="0"
               max="1000"
-              step="50"
+              step="25"
             >
             <h5 class="slider-limit-section text-center margin-zero">1000</h5>
           </div>
-          <h5 class="text-center margin-small">MUTATION FREQUENCY (#)</h5>
+          <h5
+            id="slider-mutation-title"
+            class="text-center margin-small"
+          >
+            LOADING...
+          </h5>
           <div style="display: flex">
             <h5 class="slider-limit-section text-center margin-zero">0.0</h5>
             <input
+              id="slider-mutation"
               class="slider-section margin-zero accent-other"
               type="range"
               min="0"
               max="1"
-              step="0.05"
+              step="0.025"
             >
             <h5 class="slider-limit-section text-center margin-zero">1.0</h5>
+          </div>
+          <h5 id="slider-resolution-title" class="text-center margin-small">
+            LOADING...
+          </h5>
+          <div style="display: flex">
+            <h5 class="slider-limit-section text-center margin-zero">64</h5>
+            <input
+              id="slider-resolution"
+              class="slider-section margin-zero accent-other"
+              type="range"
+              min="64"
+              max="512"
+              step="32"
+            >
+            <h5 class="slider-limit-section text-center margin-zero">512</h5>
           </div>
         </div>
       </div>
       <div class="content-section" style="position: relative">
-        <div>
-          <div class="center-column" style="position: absolute">
+        <div id="content-images" style="display: none">
+          <div class="center-row" style="position: absolute">
+            <img
+              id="content-images-reference"
+              class="content-image-section"
+            >
+            <canvas
+              id="content-images-generated"
+              class="content-image-section"
+            ></canvas>
+          </div>
+        </div>
+        <div id="content-upload">
+          <div class="center-column margin-zero" style="position: absolute">
             <h2 class="text-center margin-zero">
               UPLOAD YOUR IMAGE TO START THE ALGORITHM
             </h2>
@@ -59,10 +98,10 @@
               YOU CAN DRAG AND DROP IT HERE OR CLICK TO BROWSE
             </h5>
           </div>
-          <div class="upload-section" style="position: absolute">
+          <div class="content-upload-section" style="position: absolute">
             <input
-              id="image-input"
-              class="upload-section"
+              id="content-upload-input"
+              class="content-upload-section"
               style="opacity: 0"
               type="file"
               accept="image/*"
