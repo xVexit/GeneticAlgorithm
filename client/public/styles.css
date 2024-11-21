@@ -1,0 +1,137 @@
+.main {
+  position: absolute;
+  display: flex;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  color: #191a1f;
+  background-color: #fcfcfc;
+  font-family: Tahoma, sans-serif;
+}
+
+.text-left {
+  text-align: left;
+  margin-left: 2px;
+  margin-right: 2px;
+  user-select: none;
+}
+
+.text-center {
+  text-align: center;
+  margin-left: 2px;
+  margin-right: 2px;
+  user-select: none;
+}
+
+.text-right {
+  text-align: right;
+  margin-left: 2px;
+  margin-right: 2px;
+  user-select: none;
+}
+
+.margin-zero {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+.margin-small {
+  margin-top: 8px;
+  margin-bottom: 0px;
+}
+
+.margin-medium {
+  margin-top: 16px;
+  margin-bottom: 0px;
+}
+
+.margin-big {
+  margin-top: 32px;
+  margin-bottom: 0px;
+}
+
+.center-row {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.center-column {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.color-white {
+  color: #fcfcfc;
+}
+
+.color-black {
+  color: #191a1f;
+}
+
+.color-other {
+  color: #ee964b;
+}
+
+.accent-white {
+  accent-color: #fcfcfc;
+}
+
+.accent-black {
+  accent-color: #191a1f;
+}
+
+.accent-other {
+  accent-color: #ee964b;
+}
+
+.background-white {
+  background-color: #fcfcfc;
+}
+
+.background-black {
+  background-color: #191a1f;
+}
+
+.background-other {
+  background-color: #ee964b;
+}
+
+.sidebar-section {
+  width: 15%;
+  height: 100%;
+  border-right: solid 16px #ee964b;
+}
+
+.slider-section {
+  width: 70%;
+  height: auto;
+}
+
+.slider-limit-section {
+  width: 15%;
+  height: auto;
+}
+
+.content-section {
+  width: 85%;
+  height: 100%;
+}
+
+.content-upload-section {
+  width: 100%;
+  height: 100%;
+}
+
+.content-image-section {
+  max-width: 50%;
+  max-height: 100%;
+}
