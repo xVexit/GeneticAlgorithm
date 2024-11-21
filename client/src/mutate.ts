@@ -24,3 +24,7 @@ export function mutate(
 	 }
 	 return mutated;
 }
+
+/** add population as a parameter, range of random value has to be -1 -> delta(2) / population
+ * example if popultion = 4, then range for first vertex is -1 -> -0.5 (-1 + (2/4))
+ * */
