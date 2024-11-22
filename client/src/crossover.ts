@@ -11,7 +11,7 @@ export function crossover(
 ): Float32Array {
   if (parent1.length !== parent2.length) {
     throw new Error(
-      "Parents arrays must have the same length and be divisibe by the vertex size",
+      "Parents arrays must have the same length ",
     );
   }
 
