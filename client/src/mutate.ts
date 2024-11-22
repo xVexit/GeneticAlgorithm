@@ -51,11 +51,6 @@ export function mutate(
  * - Individual 1 (offset = 1) gets range [-0.5, 0)
  * - Individual 2 (offset = 2) gets range [0, 0.5)
  * - Individual 3 (offset = 3) gets range [0.5, 1)
- *//**
- * Generates a random 
- * @param {number} population - size of population
- * @param {number} offset - offset of an individual compared to whole population
- * @returns {number}
  */
 export function getRandomPosition(
   population: number,
