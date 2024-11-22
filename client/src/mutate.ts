@@ -18,7 +18,7 @@ export function mutate(
     const offset = Math.floor(i / verticesPerIndividual / 6);
     // random values for cordinates
     if (Math.random() < mutationRate) {
-      vertices[i] = getRandomPosition(population,offset);
+      vertices[i] = getRandomPosition(population, offset);
     }
     if (Math.random() < mutationRate) {
       vertices[i + 1] = getRandomPosition(population, offset);
@@ -36,7 +36,7 @@ export function mutate(
 /**
  * Generates a random position within a specific range for an individual
  * in a population, based on the size of the population and the individual's offset.
- * 
+ *
  * Each individual is assigned a unique segment of the range [-1, 1] based on the
  * total population size. This function calculates the segment for the given
  * individual and generates a random value within that segment.
