@@ -38,7 +38,7 @@ export function mutate(
  * @param {number} index - 
  * @returns {number}
  */
-export function getRandom(
+export function getRandomPosition(
 	population: number,
 	index: number,
 ): number {
