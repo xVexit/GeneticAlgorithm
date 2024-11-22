@@ -5,26 +5,44 @@
  * @param {num} mutationRate - probability of mutation for each vertex
  * @param {num} width - the width of the canvas
  * @param {num} height - the height of the canvas
+ * @param {num} population - size of population
  * @returns {Float32Array} - The mutated individual.
  */
 export function mutate(
-	individual: Float32Array,
+	vertices: Float32Array,
 	mutationRate: number,
-	width: number,
-	height: number,
+	population: number,
 ): Float32Array {
-	const mutated = individual.slice();
-	for (let i = 0; i < mutated.length; i += 2){
+
+	for (let i = 0; i < vertices.length; i += 6){
+		// random values for cordinates
 		if (Math.random() < mutationRate){
-			mutated[i] = Math.max(0, Math.min(width, mutated[i] + (Math.random() - 0.5) * 20));
+			vertices[i] = getRandom(population,i); 
 		}
 		if (Math.random() < mutationRate) {
-			mutated[i + 1] = Math.max(0, Math.min(height, mutated[i + 1] + (Math.random() - 0.5) * 20));
+			vertices[i+1] = getRandom(population,i);
+		}
+
+		// random value for colors
+		for (let j = 0; j < 4; j++){
+			if (Math.random() < mutationRate){
+				vertices[j+2+i] = Math.random();
+			}
 		}
 	 }
-	 return mutated;
+	 return vertices;
 }
-
-/** add population as a parameter, range of random value has to be -1 -> delta(2) / population
- * example if popultion = 4, then range for first vertex is -1 -> -0.5 (-1 + (2/4))
- * */
+/**
+ * Generates a random value within a specific range
+ * @param {number} population - size of population
+ * @param {number} index - 
+ * @returns {number}
+ */
+export function getRandom(
+	population: number,
+	index: number,
+): number {
+	const range = 2/population;
+	const start = -1;
+	return Math.random() * (range) + (index + start);
+}
