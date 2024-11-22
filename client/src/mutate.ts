@@ -16,10 +16,10 @@ export function mutate(
   for (let i = 0; i < vertices.length; i += 6) {
     // random values for cordinates
     if (Math.random() < mutationRate) {
-      vertices[i] = getRandom(population, i);
+      vertices[i] = getRandomPosition(population, i);
     }
     if (Math.random() < mutationRate) {
-      vertices[i + 1] = getRandom(population, i);
+      vertices[i + 1] = getRandomPosition(population, i);
     }
 
     // random value for colors
@@ -37,7 +37,7 @@ export function mutate(
  * @param {number} index -
  * @returns {number}
  */
-export function getRandom(
+export function getRandomPosition(
   population: number,
   index: number,
 ): number {
