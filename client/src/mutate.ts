@@ -13,13 +13,15 @@ export function mutate(
   mutationRate: number,
   population: number,
 ): Float32Array {
+  const verticesPerIndividual = vertices.length / population;
   for (let i = 0; i < vertices.length; i += 6) {
+    const offset = Math.floor(i / verticesPerIndividual / 6);
     // random values for cordinates
     if (Math.random() < mutationRate) {
-      vertices[i] = getRandomPosition(population, i);
+      vertices[i] = getRandomPosition(population,offset);
     }
     if (Math.random() < mutationRate) {
-      vertices[i + 1] = getRandomPosition(population, i);
+      vertices[i + 1] = getRandomPosition(population, offset);
     }
 
     // random value for colors
@@ -32,16 +34,34 @@ export function mutate(
   return vertices;
 }
 /**
- * Generates a random value within a specific range
+ * Generates a random position within a specific range for an individual
+ * in a population, based on the size of the population and the individual's offset.
+ * 
+ * Each individual is assigned a unique segment of the range [-1, 1] based on the
+ * total population size. This function calculates the segment for the given
+ * individual and generates a random value within that segment.
+ *
+ * @param {number} population - The total size of the population. Determines the width of each individual's range.
+ * @param {number} offset - The index or position of the individual within the population. Determines the segment's offset.
+ * @returns {number} - A random position within the range assigned to the individual.
+ *
+ * Example:
+ * For a population of 4:
+ * - Individual 0 (offset = 0) gets range [-1, -0.5)
+ * - Individual 1 (offset = 1) gets range [-0.5, 0)
+ * - Individual 2 (offset = 2) gets range [0, 0.5)
+ * - Individual 3 (offset = 3) gets range [0.5, 1)
+ *//**
+ * Generates a random 
  * @param {number} population - size of population
- * @param {number} index -
+ * @param {number} offset - offset of an individual compared to whole population
  * @returns {number}
  */
 export function getRandomPosition(
   population: number,
-  index: number,
+  offset: number,
 ): number {
   const range = 2 / population;
   const start = -1;
-  return Math.random() * range + (index + start);
+  return Math.random() * range + offset + start;
 }
