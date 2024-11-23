@@ -8,10 +8,20 @@ const SLIDER_MUTATION: string = "#slider-mutation";
 const SLIDER_MUTATION_TITLE: string = "#slider-mutation-title";
 const SLIDER_RESOLUTION: string = "#slider-resolution";
 const SLIDER_RESOLUTION_TITLE: string = "#slider-resolution-title";
+const SLIDER_ELIMINATION: string = "#slider-elimination";
+const SLIDER_ELIMINATION_TITLE: string = "#slider-elimination-title";
 
 const CONTENT_IMAGE_UPLOAD: string = "#content-image-upload";
 const CONTENT_IMAGE_REFERENCE: string = "#content-image-reference";
 const CONTENT_IMAGE_GENERATED: string = "#content-image-generated";
+
+const application = {
+  triangles: 0,
+  population: 0,
+  mutation: 0,
+  resolution: 0,
+  elimination: 0,
+};
 
 function setupSliderUpdateCallback(
   query: string,
@@ -36,6 +46,7 @@ function setupPopulationSliderElement(): void {
   setupSliderUpdateCallback(
     SLIDER_POPULATION,
     (value: number) => {
+      application.population = value || 1;
       if (title) {
         title.innerText = `POPULATION (${value || 1})`;
       }
@@ -50,6 +61,7 @@ function setupTrianglesSliderElement(): void {
   setupSliderUpdateCallback(
     SLIDER_TRIANGLES,
     (value: number) => {
+      application.triangles = value || 1;
       if (title) {
         title.innerText = `TRIANGLES (${value || 1})`;
       }
@@ -64,8 +76,24 @@ function setupMutationSliderElement(): void {
   setupSliderUpdateCallback(
     SLIDER_MUTATION,
     (value: number) => {
+      application.mutation = value;
       if (title) {
         title.innerText = `MUTATION (${value})`;
+      }
+    },
+  );
+}
+
+function setupEliminationSliderElement(): void {
+  const title = document.querySelector(SLIDER_ELIMINATION_TITLE) as
+    | HTMLHeadingElement
+    | null;
+  setupSliderUpdateCallback(
+    SLIDER_ELIMINATION,
+    (value: number) => {
+      application.elimination = value;
+      if (title) {
+        title.innerText = `ELIMINATION (${Math.floor(value * 100)}%)`;
       }
     },
   );
@@ -78,6 +106,7 @@ function setupResolutionSliderElement(): void {
   setupSliderUpdateCallback(
     SLIDER_RESOLUTION,
     (value: number) => {
+      application.resolution = value;
       if (title) {
         title.innerText = `RESOLUTION (${value}x${value})`;
       }
@@ -166,5 +195,6 @@ self.addEventListener("load", () => {
   setupPopulationSliderElement();
   setupTrianglesSliderElement();
   setupMutationSliderElement();
+  setupEliminationSliderElement();
   setupResolutionSliderElement();
 });
