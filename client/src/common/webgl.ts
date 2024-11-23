@@ -14,13 +14,13 @@ export type ResourceWithDeleteFunction<T> = [T, () => void];
  * @enum {number} DataType
  */
 export const enum DataType {
-    BYTE = 0x1400,
-    UNSIGNED_BYTE = 0x1401,
-    SHORT = 0x1402,
-    UNSIGNED_SHORT = 0x1403,
-    INT = 0x1404,
-    UNSIGNED_INT = 0x1405,
-    FLOAT = 0x1406,
+  BYTE = 0x1400,
+  UNSIGNED_BYTE = 0x1401,
+  SHORT = 0x1402,
+  UNSIGNED_SHORT = 0x1403,
+  INT = 0x1404,
+  UNSIGNED_INT = 0x1405,
+  FLOAT = 0x1406,
 }
 
 export const BYTE = DataType.BYTE;
@@ -36,8 +36,8 @@ export const FLOAT = DataType.FLOAT;
  * @enum {number} PixelFormat
  */
 export const enum PixelFormat {
-    RGB = 0x1907,
-    RGBA = 0x1908,
+  RGB = 0x1907,
+  RGBA = 0x1908,
 }
 
 export const RGB = PixelFormat.RGB;
@@ -48,12 +48,12 @@ export const RGBA = PixelFormat.RGBA;
  * @enum {number} UniformType
  */
 export const enum TextureFilter {
-    NEAREST = 0x2600,
-    LINEAR = 0x2601,
-    NEAREST_MIPMAP_NEAREST = 0x2700,
-    LINEAR_MIPMAP_NEAREST = 0x2701,
-    NEAREST_MIPMAP_LINEAR = 0x2702,
-    LINEAR_MIPMAP_LINEAR = 0x2703,
+  NEAREST = 0x2600,
+  LINEAR = 0x2601,
+  NEAREST_MIPMAP_NEAREST = 0x2700,
+  LINEAR_MIPMAP_NEAREST = 0x2701,
+  NEAREST_MIPMAP_LINEAR = 0x2702,
+  LINEAR_MIPMAP_LINEAR = 0x2703,
 }
 
 export const NEAREST = TextureFilter.NEAREST;
@@ -68,8 +68,8 @@ export const LINEAR_MIPMAP_LINEAR = TextureFilter.LINEAR_MIPMAP_LINEAR;
  * @enum {number} BufferType
  */
 export const enum BufferType {
-    ARRAY_BUFFER = 0x8892,
-    ELEMENT_ARRAY_BUFFER = 0x8893,
+  ARRAY_BUFFER = 0x8892,
+  ELEMENT_ARRAY_BUFFER = 0x8893,
 }
 
 export const ARRAY_BUFFER = BufferType.ARRAY_BUFFER;
@@ -80,9 +80,9 @@ export const ELEMENT_ARRAY_BUFFER = BufferType.ELEMENT_ARRAY_BUFFER;
  * @enum {number} BufferUsage
  */
 export const enum BufferUsage {
-    STREAM_DRAW = 0x88E0,
-    STATIC_DRAW = 0x88E4,
-    DYNAMIC_DRAW = 0x88E8,
+  STREAM_DRAW = 0x88E0,
+  STATIC_DRAW = 0x88E4,
+  DYNAMIC_DRAW = 0x88E8,
 }
 
 export const STREAM_DRAW = BufferUsage.STREAM_DRAW;
@@ -94,8 +94,8 @@ export const DYNAMIC_DRAW = BufferUsage.DYNAMIC_DRAW;
  * @enum {number} ShaderType
  */
 export const enum ShaderType {
-    FRAGMENT_SHADER = 0x8B30,
-    VERTEX_SHADER = 0x8B31,
+  FRAGMENT_SHADER = 0x8B30,
+  VERTEX_SHADER = 0x8B31,
 }
 
 export const VERTEX_SHADER = ShaderType.VERTEX_SHADER;
@@ -106,14 +106,14 @@ export const FRAGMENT_SHADER = ShaderType.FRAGMENT_SHADER;
  * @enum {number} UniformType
  */
 export const enum UniformType {
-    UNIFORM_INT,
-    UNIFORM_FLOAT,
-    UNIFORM_INT2,
-    UNIFORM_FLOAT2,
-    UNIFORM_INT3,
-    UNIFORM_FLOAT3,
-    UNIFORM_INT4,
-    UNIFORM_FLOAT4,
+  UNIFORM_INT,
+  UNIFORM_FLOAT,
+  UNIFORM_INT2,
+  UNIFORM_FLOAT2,
+  UNIFORM_INT3,
+  UNIFORM_FLOAT3,
+  UNIFORM_INT4,
+  UNIFORM_FLOAT4,
 }
 
 export const UNIFORM_INT = UniformType.UNIFORM_INT;
@@ -136,25 +136,25 @@ export const UNIFORM_FLOAT4 = UniformType.UNIFORM_FLOAT4;
  * @returns {ResourceWithDeleteFunction<Shader>} The shader with the delete function.
  */
 export function createShader(
-    context: Context,
-    type: ShaderType,
-    source: string,
+  context: Context,
+  type: ShaderType,
+  source: string,
 ): ResourceWithDeleteFunction<Shader> {
-    const shader: Shader | null = context.createShader(type);
-    if (!shader) {
-        throw new Error("Unable to create WebGL shader!");
-    }
+  const shader: Shader | null = context.createShader(type);
+  if (!shader) {
+    throw new Error("Unable to create WebGL shader!");
+  }
 
-    context.shaderSource(shader, source);
-    context.compileShader(shader);
+  context.shaderSource(shader, source);
+  context.compileShader(shader);
 
-    if (context.getShaderParameter(shader, context.COMPILE_STATUS)) {
-        return [shader, () => context.deleteShader(shader)];
-    } else {
-        throw new Error(
-            `Failed to compile a shader: ${context.getShaderInfoLog(shader)}`,
-        );
-    }
+  if (context.getShaderParameter(shader, context.COMPILE_STATUS)) {
+    return [shader, () => context.deleteShader(shader)];
+  } else {
+    throw new Error(
+      `Failed to compile a shader: ${context.getShaderInfoLog(shader)}`,
+    );
+  }
 }
 
 /**
@@ -167,25 +167,25 @@ export function createShader(
  * @returns {ResourceWithDeleteFunction<Program>} The program with the delete function.
  */
 export function createProgram(
-    context: Context,
-    shaders: Shader[],
+  context: Context,
+  shaders: Shader[],
 ): ResourceWithDeleteFunction<Program> {
-    const program: Program | null = context.createProgram();
-    if (!program) {
-        throw new Error("Unable to create WebGL program!");
-    }
+  const program: Program | null = context.createProgram();
+  if (!program) {
+    throw new Error("Unable to create WebGL program!");
+  }
 
-    shaders.forEach((shader) => context.attachShader(program, shader));
-    context.linkProgram(program);
-    shaders.forEach((shader) => context.detachShader(program, shader));
+  shaders.forEach((shader) => context.attachShader(program, shader));
+  context.linkProgram(program);
+  shaders.forEach((shader) => context.detachShader(program, shader));
 
-    if (context.getProgramParameter(program, context.LINK_STATUS)) {
-        return [program, () => context.deleteProgram(program)];
-    } else {
-        throw new Error(
-            `Failed to link a program: ${context.getProgramInfoLog(program)}`,
-        );
-    }
+  if (context.getProgramParameter(program, context.LINK_STATUS)) {
+    return [program, () => context.deleteProgram(program)];
+  } else {
+    throw new Error(
+      `Failed to link a program: ${context.getProgramInfoLog(program)}`,
+    );
+  }
 }
 
 /**
@@ -202,37 +202,37 @@ export function createProgram(
  * @returns {ResourceWithDeleteFunction<Buffer>} The buffer with the delete function.
  */
 export function createBuffer(
-    context: Context,
-    data: ArrayBufferView | number,
-    options: {
-        type?: BufferType;
-        usage?: BufferUsage;
-    } = {},
+  context: Context,
+  data: ArrayBufferView | number,
+  options: {
+    type?: BufferType;
+    usage?: BufferUsage;
+  } = {},
 ): ResourceWithDeleteFunction<Buffer> {
-    const buffer: Buffer | null = context.createBuffer();
-    if (!buffer) {
-        throw new Error("Unable to create WebGL buffer!");
-    }
+  const buffer: Buffer | null = context.createBuffer();
+  if (!buffer) {
+    throw new Error("Unable to create WebGL buffer!");
+  }
 
-    context.bindBuffer(options.type || ARRAY_BUFFER, buffer);
-    switch (typeof data) {
-        case "number":
-            context.bufferData(
-                options.type || ARRAY_BUFFER,
-                data,
-                options.usage || STATIC_DRAW,
-            );
-            break;
-        default:
-            context.bufferData(
-                options.type || ARRAY_BUFFER,
-                data,
-                options.usage || STATIC_DRAW,
-            );
-            break;
-    }
+  context.bindBuffer(options.type || ARRAY_BUFFER, buffer);
+  switch (typeof data) {
+    case "number":
+      context.bufferData(
+        options.type || ARRAY_BUFFER,
+        data,
+        options.usage || STATIC_DRAW,
+      );
+      break;
+    default:
+      context.bufferData(
+        options.type || ARRAY_BUFFER,
+        data,
+        options.usage || STATIC_DRAW,
+      );
+      break;
+  }
 
-    return [buffer, () => context.deleteBuffer(buffer)];
+  return [buffer, () => context.deleteBuffer(buffer)];
 }
 
 /**
@@ -253,39 +253,39 @@ export function createBuffer(
  * @returns {ResourceWithDeleteFunction<VertexArray>} The vertex array with the delete function.
  */
 export function createVertexArray(
-    context: Context,
-    attributes: {
-        index: number;
-        size: number;
-        buffer: Buffer;
-        type?: DataType;
-        stride?: number;
-        offset?: number;
-        normalized?: boolean;
-    }[],
+  context: Context,
+  attributes: {
+    index: number;
+    size: number;
+    buffer: Buffer;
+    type?: DataType;
+    stride?: number;
+    offset?: number;
+    normalized?: boolean;
+  }[],
 ): ResourceWithDeleteFunction<VertexArray> {
-    const vertexArray: VertexArray | null = context.createVertexArray();
-    if (!vertexArray) {
-        throw new Error("Unable to create WebGL vertex array!");
-    }
+  const vertexArray: VertexArray | null = context.createVertexArray();
+  if (!vertexArray) {
+    throw new Error("Unable to create WebGL vertex array!");
+  }
 
-    context.bindVertexArray(vertexArray);
-    attributes.forEach(
-        (attribute) => {
-            context.enableVertexAttribArray(attribute.index);
-            context.bindBuffer(context.ARRAY_BUFFER, attribute.buffer);
-            context.vertexAttribPointer(
-                attribute.index,
-                attribute.size,
-                attribute.type || FLOAT,
-                attribute.normalized || false,
-                attribute.stride || 0,
-                attribute.offset || 0,
-            );
-        },
-    );
+  context.bindVertexArray(vertexArray);
+  attributes.forEach(
+    (attribute) => {
+      context.enableVertexAttribArray(attribute.index);
+      context.bindBuffer(context.ARRAY_BUFFER, attribute.buffer);
+      context.vertexAttribPointer(
+        attribute.index,
+        attribute.size,
+        attribute.type || FLOAT,
+        attribute.normalized || false,
+        attribute.stride || 0,
+        attribute.offset || 0,
+      );
+    },
+  );
 
-    return [vertexArray, () => context.deleteVertexArray(vertexArray)];
+  return [vertexArray, () => context.deleteVertexArray(vertexArray)];
 }
 
 /**
@@ -307,58 +307,58 @@ export function createVertexArray(
  * @returns {ResourceWithDeleteFunction<Texture>} The texture with the delete function.
  */
 export function createTexture(
-    context: Context,
-    width: number,
-    height: number,
-    options: {
-        format?: PixelFormat;
-        type?: DataType;
-        level?: number;
-        border?: number;
-        pixels?: ArrayBufferView;
-        filters?: {
-            minifying?: TextureFilter;
-            magnifying?: TextureFilter;
-        };
-    } = {},
+  context: Context,
+  width: number,
+  height: number,
+  options: {
+    format?: PixelFormat;
+    type?: DataType;
+    level?: number;
+    border?: number;
+    pixels?: ArrayBufferView;
+    filters?: {
+      minifying?: TextureFilter;
+      magnifying?: TextureFilter;
+    };
+  } = {},
 ): ResourceWithDeleteFunction<Texture> {
-    const texture: Texture | null = context.createTexture();
-    if (!texture) {
-        throw new Error("Unable to create WebGL texture!");
-    }
+  const texture: Texture | null = context.createTexture();
+  if (!texture) {
+    throw new Error("Unable to create WebGL texture!");
+  }
 
-    context.bindTexture(context.TEXTURE_2D, texture);
-    context.texImage2D(
+  context.bindTexture(context.TEXTURE_2D, texture);
+  context.texImage2D(
+    context.TEXTURE_2D,
+    options.level || 0,
+    options.format || RGBA,
+    width,
+    height,
+    options.border || 0,
+    options.format || RGBA,
+    options.type || UNSIGNED_BYTE,
+    options.pixels || null,
+  );
+
+  if (options.filters) {
+    const { minifying, magnifying } = options.filters;
+    if (minifying) {
+      context.texParameteri(
         context.TEXTURE_2D,
-        options.level || 0,
-        options.format || RGBA,
-        width,
-        height,
-        options.border || 0,
-        options.format || RGBA,
-        options.type || UNSIGNED_BYTE,
-        options.pixels || null,
-    );
-
-    if (options.filters) {
-        const { minifying, magnifying } = options.filters;
-        if (minifying) {
-            context.texParameteri(
-                context.TEXTURE_2D,
-                context.TEXTURE_MIN_FILTER,
-                minifying,
-            );
-        }
-        if (magnifying) {
-            context.texParameteri(
-                context.TEXTURE_2D,
-                context.TEXTURE_MAG_FILTER,
-                magnifying,
-            );
-        }
+        context.TEXTURE_MIN_FILTER,
+        minifying,
+      );
     }
+    if (magnifying) {
+      context.texParameteri(
+        context.TEXTURE_2D,
+        context.TEXTURE_MAG_FILTER,
+        magnifying,
+      );
+    }
+  }
 
-    return [texture, () => context.deleteTexture(texture)];
+  return [texture, () => context.deleteTexture(texture)];
 }
 
 /**
@@ -375,32 +375,32 @@ export function createTexture(
  * @returns {ResourceWithDeleteFunction<Framebuffer>} The framebuffer with the delete function.
  */
 export function createFramebuffer(
-    context: Context,
-    attachments: {
-        index: number;
-        texture: Texture;
-        level?: number;
-    }[],
+  context: Context,
+  attachments: {
+    index: number;
+    texture: Texture;
+    level?: number;
+  }[],
 ): ResourceWithDeleteFunction<Framebuffer> {
-    const framebuffer: Framebuffer = context.createFramebuffer()!;
-    if (!framebuffer) {
-        throw new Error("Unable to create WebGL framebuffer!");
-    }
+  const framebuffer: Framebuffer = context.createFramebuffer()!;
+  if (!framebuffer) {
+    throw new Error("Unable to create WebGL framebuffer!");
+  }
 
-    context.bindFramebuffer(context.FRAMEBUFFER, framebuffer);
-    attachments.forEach(
-        (attachment) => {
-            context.framebufferTexture2D(
-                context.FRAMEBUFFER,
-                context.COLOR_ATTACHMENT0 + attachment.index,
-                context.TEXTURE_2D,
-                attachment.texture,
-                attachment.level || 0,
-            );
-        },
-    );
+  context.bindFramebuffer(context.FRAMEBUFFER, framebuffer);
+  attachments.forEach(
+    (attachment) => {
+      context.framebufferTexture2D(
+        context.FRAMEBUFFER,
+        context.COLOR_ATTACHMENT0 + attachment.index,
+        context.TEXTURE_2D,
+        attachment.texture,
+        attachment.level || 0,
+      );
+    },
+  );
 
-    return [framebuffer, () => context.deleteFramebuffer(framebuffer)];
+  return [framebuffer, () => context.deleteFramebuffer(framebuffer)];
 }
 
 /**
@@ -414,62 +414,62 @@ export function createFramebuffer(
  * @returns UniformLocation The uniform location from the specified WebGL program.
  */
 export function selectUniform(
-    context: Context,
-    program: Program,
-    uniform: string,
+  context: Context,
+  program: Program,
+  uniform: string,
 ): UniformLocation {
-    const uniformLocation: UniformLocation | null = context
-        .getUniformLocation(program, uniform);
-    if (uniformLocation) {
-        return uniformLocation;
-    } else {
-        throw new Error(`Failed to select a uniform: ${uniform}`);
-    }
+  const uniformLocation: UniformLocation | null = context
+    .getUniformLocation(program, uniform);
+  if (uniformLocation) {
+    return uniformLocation;
+  } else {
+    throw new Error(`Failed to select a uniform: ${uniform}`);
+  }
 }
 
 /**
  * Selects an array of pixels from the specified WebGL framebuffer.
- * 
+ *
  * @param context - The WebGL context.
  * @param framebuffer - The WebGL framebuffer.
  * @param width - The width of the region.
  * @param height - The height of the region.
  * @param options - The WebGL reading options:
- * 
+ *
  * - type: The WebGL texture type (default: UNSIGNED_BYTE).
  * - format: The WebGL texture format (default: RGBA).
  * - offset: The offset of the region (default: {x: 0, y: 0}).
- * 
+ *
  * @returns {Uint8Array} An array of pixels from the specified WebGL framebuffer.
  */
 export function selectPixels(
-    context: Context,
-    framebuffer: Framebuffer,
-    width: number,
-    height: number,
-    options: {
-        type?: DataType;
-        format?: PixelFormat;
-        offset?: {
-            x: number;
-            y: number;
-        };
-    } = {},
+  context: Context,
+  framebuffer: Framebuffer,
+  width: number,
+  height: number,
+  options: {
+    type?: DataType;
+    format?: PixelFormat;
+    offset?: {
+      x: number;
+      y: number;
+    };
+  } = {},
 ): Uint8Array {
-    const pixels = new Uint8Array(width * height * 4);
+  const pixels = new Uint8Array(width * height * 4);
 
-    context.bindFramebuffer(context.FRAMEBUFFER, framebuffer);
-    context.readPixels(
-        options.offset?.x || 0,
-        options.offset?.y || 0,
-        width,
-        height,
-        options.format || RGBA,
-        options.type || UNSIGNED_BYTE,
-        pixels,
-    );
+  context.bindFramebuffer(context.FRAMEBUFFER, framebuffer);
+  context.readPixels(
+    options.offset?.x || 0,
+    options.offset?.y || 0,
+    width,
+    height,
+    options.format || RGBA,
+    options.type || UNSIGNED_BYTE,
+    pixels,
+  );
 
-    return pixels;
+  return pixels;
 }
 
 /**
@@ -484,20 +484,20 @@ export function selectPixels(
  * - offset: The WebGL buffer starting offset. (default: 0)
  */
 export function updateBuffer(
-    context: Context,
-    buffer: Buffer,
-    data: ArrayBufferView,
-    options: {
-        type?: BufferType;
-        offset?: number;
-    } = {},
+  context: Context,
+  buffer: Buffer,
+  data: ArrayBufferView,
+  options: {
+    type?: BufferType;
+    offset?: number;
+  } = {},
 ): void {
-    context.bindBuffer(options.type || ARRAY_BUFFER, buffer);
-    context.bufferSubData(
-        options.type || ARRAY_BUFFER,
-        options.offset || 0,
-        data,
-    );
+  context.bindBuffer(options.type || ARRAY_BUFFER, buffer);
+  context.bufferSubData(
+    options.type || ARRAY_BUFFER,
+    options.offset || 0,
+    data,
+  );
 }
 
 /**
@@ -516,200 +516,200 @@ export function updateBuffer(
  * - uniforms: The WebGL uniforms with specified values and locations.
  */
 export function drawArrays(
-    context: Context,
-    program: Program,
-    vertexArray: VertexArray,
-    vertices: number,
-    options: {
-        framebuffer?: Framebuffer;
-        viewport?: {
-            x?: number;
-            y?: number;
-            width?: number;
-            height?: number;
-        };
-        clear?: {
-            color?: {
-                r: number;
-                g: number;
-                b: number;
-                a: number;
-            };
-            depth?: number;
-        };
-        textures?: {
-            unit: number;
-            texture: Texture;
-        }[];
-        uniforms?: {
-            location: UniformLocation;
-            type: UniformType;
-            value: {
-                x?: number;
-                y?: number;
-                z?: number;
-                w?: number;
-            };
-        }[];
-    } = {},
+  context: Context,
+  program: Program,
+  vertexArray: VertexArray,
+  vertices: number,
+  options: {
+    framebuffer?: Framebuffer;
+    viewport?: {
+      x?: number;
+      y?: number;
+      width?: number;
+      height?: number;
+    };
+    clear?: {
+      color?: {
+        r: number;
+        g: number;
+        b: number;
+        a: number;
+      };
+      depth?: number;
+    };
+    textures?: {
+      unit: number;
+      texture: Texture;
+    }[];
+    uniforms?: {
+      location: UniformLocation;
+      type: UniformType;
+      value: {
+        x?: number;
+        y?: number;
+        z?: number;
+        w?: number;
+      };
+    }[];
+  } = {},
 ): void {
-    context.bindFramebuffer(context.FRAMEBUFFER, options.framebuffer || null);
-    context.useProgram(program);
-    context.bindVertexArray(vertexArray);
+  context.bindFramebuffer(context.FRAMEBUFFER, options.framebuffer || null);
+  context.useProgram(program);
+  context.bindVertexArray(vertexArray);
 
-    checkViewportOptions(context, options.viewport);
-    checkClearOptions(context, options.clear);
-    checkTexturesOptions(context, options.textures);
-    checkUniformsOptions(context, options.uniforms);
+  checkViewportOptions(context, options.viewport);
+  checkClearOptions(context, options.clear);
+  checkTexturesOptions(context, options.textures);
+  checkUniformsOptions(context, options.uniforms);
 
-    context.drawArrays(context.TRIANGLES, 0, vertices);
+  context.drawArrays(context.TRIANGLES, 0, vertices);
 }
 
 function checkViewportOptions(
-    context: Context,
-    viewport?: {
-        x?: number;
-        y?: number;
-        width?: number;
-        height?: number;
-    },
+  context: Context,
+  viewport?: {
+    x?: number;
+    y?: number;
+    width?: number;
+    height?: number;
+  },
 ): void {
-    if (viewport) {
-        context.viewport(
-            viewport.x || 0,
-            viewport.y || 0,
-            viewport.width || context.canvas.width,
-            viewport.height || context.canvas.height,
-        );
-    }
+  if (viewport) {
+    context.viewport(
+      viewport.x || 0,
+      viewport.y || 0,
+      viewport.width || context.canvas.width,
+      viewport.height || context.canvas.height,
+    );
+  }
 }
 
 function checkTexturesOptions(
-    context: Context,
-    textures?: {
-        unit: number;
-        texture: Texture;
-    }[],
+  context: Context,
+  textures?: {
+    unit: number;
+    texture: Texture;
+  }[],
 ): void {
-    if (textures) {
-        textures.forEach(
-            ({ unit, texture }) => {
-                context.activeTexture(context.TEXTURE0 + unit);
-                context.bindTexture(
-                    context.TEXTURE_2D,
-                    texture,
-                );
-            },
+  if (textures) {
+    textures.forEach(
+      ({ unit, texture }) => {
+        context.activeTexture(context.TEXTURE0 + unit);
+        context.bindTexture(
+          context.TEXTURE_2D,
+          texture,
         );
-    }
+      },
+    );
+  }
 }
 
 function checkClearOptions(
-    context: Context,
-    clear?: {
-        color?: {
-            r: number;
-            g: number;
-            b: number;
-            a: number;
-        };
-        depth?: number;
-    },
+  context: Context,
+  clear?: {
+    color?: {
+      r: number;
+      g: number;
+      b: number;
+      a: number;
+    };
+    depth?: number;
+  },
 ): void {
-    if (clear) {
-        const { color, depth } = clear;
-        if (color) {
-            context.clearColor(color.r, color.g, color.b, color.a);
-        }
-        if (depth) {
-            context.clearDepth(depth);
-        }
-        context.clear(
-            (clear.color ? context.COLOR_BUFFER_BIT : 0) |
-                (clear.depth ? context.DEPTH_BUFFER_BIT : 0),
-        );
+  if (clear) {
+    const { color, depth } = clear;
+    if (color) {
+      context.clearColor(color.r, color.g, color.b, color.a);
     }
+    if (depth) {
+      context.clearDepth(depth);
+    }
+    context.clear(
+      (clear.color ? context.COLOR_BUFFER_BIT : 0) |
+        (clear.depth ? context.DEPTH_BUFFER_BIT : 0),
+    );
+  }
 }
 
 function checkUniformsOptions(
-    context: Context,
-    uniforms?: {
-        location: UniformLocation;
-        type: UniformType;
-        value: {
-            x?: number;
-            y?: number;
-            z?: number;
-            w?: number;
-        };
-    }[],
+  context: Context,
+  uniforms?: {
+    location: UniformLocation;
+    type: UniformType;
+    value: {
+      x?: number;
+      y?: number;
+      z?: number;
+      w?: number;
+    };
+  }[],
 ): void {
-    if (uniforms) {
-        uniforms.forEach(({ location, type, value }) => {
-            switch (type) {
-                case UniformType.UNIFORM_INT:
-                    context.uniform1i(
-                        location,
-                        value.x || 0,
-                    );
-                    break;
-                case UniformType.UNIFORM_FLOAT:
-                    context.uniform1f(
-                        location,
-                        value.x || 0,
-                    );
-                    break;
-                case UniformType.UNIFORM_INT2:
-                    context.uniform2i(
-                        location,
-                        value.x || 0,
-                        value.y || 0,
-                    );
-                    break;
-                case UniformType.UNIFORM_FLOAT2:
-                    context.uniform2f(
-                        location,
-                        value.x || 0,
-                        value.y || 0,
-                    );
-                    break;
-                case UniformType.UNIFORM_INT3:
-                    context.uniform3i(
-                        location,
-                        value.x || 0,
-                        value.y || 0,
-                        value.z || 0,
-                    );
-                    break;
-                case UniformType.UNIFORM_FLOAT3:
-                    context.uniform3f(
-                        location,
-                        value.x || 0,
-                        value.y || 0,
-                        value.z || 0,
-                    );
-                    break;
-                case UniformType.UNIFORM_INT4:
-                    context.uniform4i(
-                        location,
-                        value.x || 0,
-                        value.y || 0,
-                        value.z || 0,
-                        value.w || 0,
-                    );
-                    break;
-                case UniformType.UNIFORM_FLOAT4:
-                    context.uniform4f(
-                        location,
-                        value.x || 0,
-                        value.y || 0,
-                        value.z || 0,
-                        value.w || 0,
-                    );
-                    break;
-                default:
-                    break;
-            }
-        });
-    }
+  if (uniforms) {
+    uniforms.forEach(({ location, type, value }) => {
+      switch (type) {
+        case UniformType.UNIFORM_INT:
+          context.uniform1i(
+            location,
+            value.x || 0,
+          );
+          break;
+        case UniformType.UNIFORM_FLOAT:
+          context.uniform1f(
+            location,
+            value.x || 0,
+          );
+          break;
+        case UniformType.UNIFORM_INT2:
+          context.uniform2i(
+            location,
+            value.x || 0,
+            value.y || 0,
+          );
+          break;
+        case UniformType.UNIFORM_FLOAT2:
+          context.uniform2f(
+            location,
+            value.x || 0,
+            value.y || 0,
+          );
+          break;
+        case UniformType.UNIFORM_INT3:
+          context.uniform3i(
+            location,
+            value.x || 0,
+            value.y || 0,
+            value.z || 0,
+          );
+          break;
+        case UniformType.UNIFORM_FLOAT3:
+          context.uniform3f(
+            location,
+            value.x || 0,
+            value.y || 0,
+            value.z || 0,
+          );
+          break;
+        case UniformType.UNIFORM_INT4:
+          context.uniform4i(
+            location,
+            value.x || 0,
+            value.y || 0,
+            value.z || 0,
+            value.w || 0,
+          );
+          break;
+        case UniformType.UNIFORM_FLOAT4:
+          context.uniform4f(
+            location,
+            value.x || 0,
+            value.y || 0,
+            value.z || 0,
+            value.w || 0,
+          );
+          break;
+        default:
+          break;
+      }
+    });
+  }
 }
