@@ -13,15 +13,14 @@ export function mutate(
   mutationRate: number,
   population: number,
 ): Float32Array {
-  const verticesPerIndividual = vertices.length / population;
   for (let i = 0; i < vertices.length; i += 6) {
-    const offset = Math.floor(i / verticesPerIndividual / 6);
     // random values for cordinates
     if (Math.random() < mutationRate) {
-      vertices[i] = getRandomPosition(population, offset);
+      vertices[i] = getRandomPosition(population, i);
     }
     if (Math.random() < mutationRate) {
-      vertices[i + 1] = getRandomPosition(population, offset);
+      vertices[i + 1] = Math.random();
+      // losowany pomiedzy -1 a 1
     }
 
     // random value for colors
@@ -56,7 +55,5 @@ export function getRandomPosition(
   population: number,
   offset: number,
 ): number {
-  const range = 2 / population;
-  const start = -1;
-  return Math.random() * range + offset + start;
+  return (Math.random() + offset) / population * 2 - 1;
 }
