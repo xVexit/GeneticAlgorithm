@@ -81,7 +81,7 @@ export function createFitnessFunction(
       context,
       width * population,
       height,
-      triangles * 3,
+      triangles * population * 3,
       framebufferImages,
     );
 
