@@ -1,30 +1,32 @@
 /**
- * Performs one-point crossover between two individuals
+ * Performs one-point crossover between two individuals within a shared vertices array.
  *
- * @param {Float32Array} parent1 - The first parent
- * @param {Float32Array} parent2 - The secont parent
- * @returns { Float32Array } - offspring
+ * @param {Float32Array} vertices - A shared array containing all individuals.
+ * @param {number} indexA - The index of the first parent.
+ * @param {number} indexB - The index of the second parent.
+ * @param {number} indexOutput - The index where the offspring will be stored.
+ * @returns {Float32Array} - The updated vertices array with the offspring.
  */
 export function crossover(
-  parent1: Float32Array,
-  parent2: Float32Array,
+  vertices: Float32Array,
+  indexA: number,
+  indexB: number,
+  indexOutput: number,
 ): Float32Array {
-  if (parent1.length !== parent2.length) {
-    throw new Error(
-      "Parents arrays must have the same length!!!!!!",
-    );
-  }
+  const vertexSize = 6;
 
-  const crossoverPoint = Math.floor(Math.random() * parent1.length);
+  const startA = indexA * vertexSize;
+  const startB = indexB * vertexSize;
+  const startOutput = indexOutput * vertexSize;
 
-  const offspring = new Float32Array(parent1.length);
+  const crossoverPoint = Math.floor(Math.random() * vertexSize);
 
-  for (let i = 0; i < parent1.length; i++) {
+  for (let i = 0; i < vertexSize; i++) {
     if (i < crossoverPoint) {
-      offspring[i] = parent1[i];
+      vertices[startOutput + i] = vertices[startA + i];
     } else {
-      offspring[i] = parent2[i];
+      vertices[startOutput + i] = vertices[startB + i];
     }
   }
-  return offspring;
+  return vertices;
 }
