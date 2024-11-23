@@ -1,0 +1,33 @@
+name: Deploy
+on:
+  push:
+    branches: main
+  pull_request:
+    branches: main
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Clone
+        uses: actions/checkout@v4
+
+      - name: Install
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Build
+        working-directory: "./client"
+        run: |
+          deno task build
+
+      - name: Upload
+        uses: denoland/deployctl@v1
+        with:
+          project: "genetic-algorithm"
+          root: "client/public"
+          entrypoint: "https://deno.land/std@0.224.0/http/file_server.ts"

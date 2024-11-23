@@ -1,7 +1,8 @@
 {
   "tasks": {
     "build": "deno run -A https://deno.land/x/esbuild@v0.24.0/mod.js src/main.ts --bundle --outdir=public/build",
-    "watch": "deno task build --watch"
+    "watch": "deno task build --watch",
+    "start": "deno task watch --serve=localhost:8000 --servedir=public"
   },
   "compilerOptions": {
     "lib": ["deno.ns", "dom"]
