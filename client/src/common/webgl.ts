@@ -362,6 +362,70 @@ export function createTexture(
 }
 
 /**
+ * Creates a WebGL texture from a specified image, then returns it with a delete function.
+ *
+ * @param context - The WebGL context in which to create the texture.
+ * @param image - The texture image.
+ * @param options - The WebGL texture options:
+ *
+ * - format: The WebGL texture format (default: RGBA).
+ * - type: The WebGL texture type (default: UNSIGNED_BYTE).
+ * - level: The WebGL texture level (default: 0).
+ * - filters: The WebGL texture filters options.
+ *
+ * @throws When is unable to create the WebGL texture.
+ * @returns {ResourceWithDeleteFunction<Texture>} The texture with the delete function.
+ */
+export function createTextureFromImage(
+  context: Context,
+  image: TexImageSource,
+  options: {
+    format?: PixelFormat;
+    type?: DataType;
+    level?: number;
+    filters?: {
+      minifying?: TextureFilter;
+      magnifying?: TextureFilter;
+    };
+  } = {},
+): ResourceWithDeleteFunction<Texture> {
+  const texture: Texture | null = context.createTexture();
+  if (!texture) {
+    throw new Error("Unable to create WebGL texture!");
+  }
+
+  context.bindTexture(context.TEXTURE_2D, texture);
+  context.texImage2D(
+    context.TEXTURE_2D,
+    options.level || 0,
+    options.format || RGBA,
+    options.format || RGBA,
+    options.type || UNSIGNED_BYTE,
+    image,
+  );
+
+  if (options.filters) {
+    const { minifying, magnifying } = options.filters;
+    if (minifying) {
+      context.texParameteri(
+        context.TEXTURE_2D,
+        context.TEXTURE_MIN_FILTER,
+        minifying,
+      );
+    }
+    if (magnifying) {
+      context.texParameteri(
+        context.TEXTURE_2D,
+        context.TEXTURE_MAG_FILTER,
+        magnifying,
+      );
+    }
+  }
+
+  return [texture, () => context.deleteTexture(texture)];
+}
+
+/**
  * Creates a WebGL framebuffer with specified color attachments, then returns it with a delete function.
  *
  * @param context - The WebGL context in which to create the framebuffer.
