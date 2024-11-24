@@ -4,16 +4,16 @@
  * @param {Float32Array} population - The array representing the entire population.
  * @param {number} indexA - The index of the first parent in the population.
  * @param {number} indexB - The index of the second parent in the population.
- * @param {number} trianglesPerIndividual - The number of triangles per individual.
  * @param {number} indexOutput - The index where the offspring will be stored.
+ * @param {number} trianglesPerIndividual - The number of triangles per individual.
  * @returns {Float32Array} - The updated population array with the offspring added.
  */
 export function crossover(
   population: Float32Array,
   indexA: number,
   indexB: number,
-  trianglesPerIndividual: number,
   indexOutput: number,
+  trianglesPerIndividual: number,
 ): Float32Array {
   const VERTEX_LENGTH = 6;
   const TRIANGLE_LENGTH = 18;
