@@ -2,6 +2,17 @@ import * as WebGL from "./common/webgl.ts";
 
 import { createFitnessFunction } from "./fitness.ts";
 
+/**
+ * An interface containing the algotihm function and the delete function.
+ * @typedef AlgorithmFunction
+ * @property call - A method that performs the training.
+ * @property delete - A method that releases the resources.
+ */
+export type AlgorithmFunction = {
+  call: () => [Float32Array, Float32Array];
+  delete: () => void;
+};
+
 export const VERTEX_LENGTH = 6;
 export const TRIANGLE_LENGTH = VERTEX_LENGTH * 3;
 
@@ -15,10 +26,10 @@ export const TRIANGLE_LENGTH = VERTEX_LENGTH * 3;
  * @param {number} population - The number of inviduals.
  * @param {number} mutation - The mutation rate.
  * @param {number} elimination - The elimination rate.
- * @param {WebGL.Texture} reference - The WebGL texture of the reference image.
+ * @param {HTMLImageElement} reference - The WebGL texture of the reference image.
  *
  * @throws When is unable to create WebGL resources.
- * @returns {WebGL.ResourceWithDeleteFunction<() => Float32Array>} The algorithm function with the delete function.
+ * @returns {AlgorithmFunction} The algorithm function with the delete function.
  */
 export function createAlgorithmFunction(
   context: WebGL.Context,
@@ -28,24 +39,34 @@ export function createAlgorithmFunction(
   population: number,
   mutation: number,
   elimination: number,
-  reference: WebGL.Texture,
-): WebGL.ResourceWithDeleteFunction<() => Float32Array> {
-  const [callFitnessFunction, deleteFitnessFunction] = createFitnessFunction(
-    context,
-    width,
-    height,
-    triangles,
-    population,
-    reference,
-  );
+  reference: HTMLImageElement,
+): AlgorithmFunction {
+  const vertices: Float32Array = createVertices(triangles, population);
 
-  const vertices: Float32Array = createVertices(
-    triangles,
-    population,
-  );
+  const [texture, deleteTexture] = WebGL
+    .createTextureFromImage(
+      context,
+      reference,
+      {
+        filters: {
+          minifying: WebGL.NEAREST,
+          magnifying: WebGL.NEAREST,
+        },
+      },
+    );
 
-  return [
-    (): Float32Array => {
+  const { call: callFitnessFunction, delete: deleteFitnessFunction } =
+    createFitnessFunction(
+      context,
+      width,
+      height,
+      triangles,
+      population,
+      texture,
+    );
+
+  return {
+    call: (): [Float32Array, Float32Array] => {
       const fitness = callFitnessFunction(vertices);
       const threshold = selectFitnessEliminationThreshold(fitness, elimination);
 
@@ -55,19 +76,20 @@ export function createAlgorithmFunction(
         }
       }
 
-      return vertices;
+      return [fitness, vertices];
     },
-    (): void => {
+    delete: (): void => {
+      deleteTexture();
       deleteFitnessFunction();
     },
-  ];
+  };
 }
 
 function selectFitnessEliminationThreshold(
   array: Float32Array,
   elimination: number,
 ): number {
-  return [...array].sort((a, b) => b - a)[array.length * elimination];
+  return [...array].sort((a, b) => b - a)[elimination * (array.length - 1)];
 }
 
 function createVertices(triangles: number, population: number): Float32Array {
