@@ -1,5 +1,8 @@
 import * as WebGL from "./common/webgl.ts";
 
+import { RenderFunction } from "./images.ts";
+import { AlgorithmFunction } from "./algorithm.ts";
+
 const SLIDER_POPULATION: string = "#slider-population";
 const SLIDER_POPULATION_TITLE: string = "#slider-population-title";
 const SLIDER_TRIANGLES: string = "#slider-triangles";
@@ -15,12 +18,24 @@ const CONTENT_IMAGE_UPLOAD: string = "#content-image-upload";
 const CONTENT_IMAGE_REFERENCE: string = "#content-image-reference";
 const CONTENT_IMAGE_GENERATED: string = "#content-image-generated";
 
-const application = {
+interface Application {
+  triangles: number;
+  population: number;
+  mutation: number;
+  resolution: number;
+  elimination: number;
+  update: RenderFunction | null;
+  algorithm: AlgorithmFunction | null;
+}
+
+const application: Application = {
   triangles: 0,
   population: 0,
   mutation: 0,
   resolution: 0,
   elimination: 0,
+  update: null,
+  algorithm: null,
 };
 
 function setupSliderUpdateCallback(
@@ -197,4 +212,13 @@ self.addEventListener("load", () => {
   setupMutationSliderElement();
   setupEliminationSliderElement();
   setupResolutionSliderElement();
+
+  setInterval(() => {
+    if (application.algorithm) {
+      const [fitness, vertices] = application.algorithm.call();
+      if (application.update) {
+        application.update.call(vertices);
+      }
+    }
+  }, 0);
 });
