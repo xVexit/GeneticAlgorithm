@@ -15,8 +15,8 @@ export function mutate(
   mutationRate: number,
   populationSize: number,
 ): Float32Array {
-  const TRIANGLE_LENGTH = 18;
   const VERTEX_LENGTH = 6;
+  const TRIANGLE_LENGTH = VERTEX_LENGTH * 3;
   const individualOffset = index * triangles * TRIANGLE_LENGTH;
 
   for (let j = 0; j < triangles * TRIANGLE_LENGTH; j++) {
@@ -29,7 +29,7 @@ export function mutate(
           population[vertexOffset] = getRandomPosition(populationSize, index);
           break;
         case 1:
-          population[vertexOffset] = Math.random() * 2 - 1;
+          population[vertexOffset] = Math.random() * 2.0 - 1.0;
           break;
         default:
           population[vertexOffset] = Math.random();
@@ -63,5 +63,5 @@ export function getRandomPosition(
   population: number,
   offset: number,
 ): number {
-  return (Math.random() + offset) / population * 2 - 1;
+  return (Math.random() + offset) / population * 2.0 - 1.0;
 }
