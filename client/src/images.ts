@@ -2,6 +2,17 @@ import * as WebGL from "./common/webgl.ts";
 import { FRAGMENT_SHADER_IMAGES, VERTEX_SHADER_IMAGES } from "./shaders.ts";
 
 /**
+ * An interface containing the render function and the delete function.
+ * @typedef RenderFunction
+ * @property call - A method that performs the rendering.
+ * @property delete - A method that releases the resources.
+ */
+export type RenderFunction = {
+  call: (data: Float32Array) => void;
+  delete: () => void;
+};
+
+/**
  * Creates a function rendering triangles to the specified framebuffer.
  *
  * @param {WebGL.Context} context - The WebGL context used for rendering.
@@ -11,15 +22,15 @@ import { FRAGMENT_SHADER_IMAGES, VERTEX_SHADER_IMAGES } from "./shaders.ts";
  * @param {WebGL.Framebuffer} framebuffer - The WebGL framebuffer used for rendering.
  *
  * @throws When is unable to create WebGL resources.
- * @returns {WebGL.ResourceWithDeleteFunction<(data: Float32Array) => void>}
+ * @returns { RenderFunction } The render function with the delete function.
  */
-export function createImagesRenderFunction(
+export function createRenderFunction(
   context: WebGL.Context,
   width: number,
   height: number,
   vertices: number,
   framebuffer?: WebGL.Framebuffer,
-): WebGL.ResourceWithDeleteFunction<(data: Float32Array) => void> {
+): RenderFunction {
   const [vertexShader, deleteVertexShader] = WebGL
     .createShader(
       context,
@@ -74,8 +85,8 @@ export function createImagesRenderFunction(
       ],
     );
 
-  return [
-    (data: Float32Array): void => {
+  return {
+    call: (data: Float32Array): void => {
       WebGL.updateBuffer(context, vertexBuffer, data);
       WebGL.drawArrays(
         context,
@@ -99,12 +110,12 @@ export function createImagesRenderFunction(
         },
       );
     },
-    (): void => {
+    delete: (): void => {
       deleteVertexShader();
       deleteFragmentShader();
       deleteVertexArray();
       deleteVertexBuffer();
       deleteShaderProgram();
     },
-  ];
+  };
 }

@@ -39,28 +39,24 @@ layout(location = 0) out vec4 color;
 
 uniform sampler2D texture_reference;
 uniform sampler2D texture_generated;
+uniform float width;
+uniform float height;
+uniform float population;
 
-vec3 colorAverageFitness(int x, int texture_reference_width, int texture_generated_height) {
+vec3 colorAverageFitness(float x) {
     vec3 total = vec3(0.0, 0.0, 0.0);
 
-    for (int y = 0; y < texture_generated_height; y++) {
+    for(float y = 0.0; y < height; y++) {
         total += abs(
-            texelFetch(texture_reference, ivec2(x % texture_reference_width, y), 0).xyz
-                - texelFetch(texture_generated, ivec2(x, y), 0).xyz
+            texture(texture_reference, vec2(fract(x / width), 1.0 - y / height)).xyz
+                - texture(texture_generated, vec2(x / width / population, y / height)).xyz
         );
     }
 
-    return vec3(1.0) - total / float(texture_generated_height);
+    return vec3(1.0) - total / height;
 }
 
 void main() {
-    color = vec4(
-        colorAverageFitness(
-            int(gl_FragCoord.x),
-            textureSize(texture_reference, 0).x,
-            textureSize(texture_generated, 0).y
-        ),
-        1.0
-    );
+    color = vec4(colorAverageFitness(gl_FragCoord.x), 1.0);
 }
 `;

@@ -1,5 +1,8 @@
 import * as WebGL from "./common/webgl.ts";
 
+import { RenderFunction } from "./images.ts";
+import { AlgorithmFunction } from "./algorithm.ts";
+
 const SLIDER_POPULATION: string = "#slider-population";
 const SLIDER_POPULATION_TITLE: string = "#slider-population-title";
 const SLIDER_TRIANGLES: string = "#slider-triangles";
@@ -8,10 +11,32 @@ const SLIDER_MUTATION: string = "#slider-mutation";
 const SLIDER_MUTATION_TITLE: string = "#slider-mutation-title";
 const SLIDER_RESOLUTION: string = "#slider-resolution";
 const SLIDER_RESOLUTION_TITLE: string = "#slider-resolution-title";
+const SLIDER_ELIMINATION: string = "#slider-elimination";
+const SLIDER_ELIMINATION_TITLE: string = "#slider-elimination-title";
 
 const CONTENT_IMAGE_UPLOAD: string = "#content-image-upload";
 const CONTENT_IMAGE_REFERENCE: string = "#content-image-reference";
 const CONTENT_IMAGE_GENERATED: string = "#content-image-generated";
+
+interface Application {
+  triangles: number;
+  population: number;
+  mutation: number;
+  resolution: number;
+  elimination: number;
+  update: RenderFunction | null;
+  algorithm: AlgorithmFunction | null;
+}
+
+const application: Application = {
+  triangles: 0,
+  population: 0,
+  mutation: 0,
+  resolution: 0,
+  elimination: 0,
+  update: null,
+  algorithm: null,
+};
 
 function setupSliderUpdateCallback(
   query: string,
@@ -36,6 +61,7 @@ function setupPopulationSliderElement(): void {
   setupSliderUpdateCallback(
     SLIDER_POPULATION,
     (value: number) => {
+      application.population = value || 1;
       if (title) {
         title.innerText = `POPULATION (${value || 1})`;
       }
@@ -50,6 +76,7 @@ function setupTrianglesSliderElement(): void {
   setupSliderUpdateCallback(
     SLIDER_TRIANGLES,
     (value: number) => {
+      application.triangles = value || 1;
       if (title) {
         title.innerText = `TRIANGLES (${value || 1})`;
       }
@@ -64,8 +91,24 @@ function setupMutationSliderElement(): void {
   setupSliderUpdateCallback(
     SLIDER_MUTATION,
     (value: number) => {
+      application.mutation = value;
       if (title) {
         title.innerText = `MUTATION (${value})`;
+      }
+    },
+  );
+}
+
+function setupEliminationSliderElement(): void {
+  const title = document.querySelector(SLIDER_ELIMINATION_TITLE) as
+    | HTMLHeadingElement
+    | null;
+  setupSliderUpdateCallback(
+    SLIDER_ELIMINATION,
+    (value: number) => {
+      application.elimination = value;
+      if (title) {
+        title.innerText = `ELIMINATION (${Math.floor(value * 100)}%)`;
       }
     },
   );
@@ -78,6 +121,7 @@ function setupResolutionSliderElement(): void {
   setupSliderUpdateCallback(
     SLIDER_RESOLUTION,
     (value: number) => {
+      application.resolution = value;
       if (title) {
         title.innerText = `RESOLUTION (${value}x${value})`;
       }
@@ -166,5 +210,15 @@ self.addEventListener("load", () => {
   setupPopulationSliderElement();
   setupTrianglesSliderElement();
   setupMutationSliderElement();
+  setupEliminationSliderElement();
   setupResolutionSliderElement();
+
+  setInterval(() => {
+    if (application.algorithm) {
+      const [fitness, vertices] = application.algorithm.call();
+      if (application.update) {
+        application.update.call(vertices);
+      }
+    }
+  }, 0);
 });

@@ -1,6 +1,29 @@
 import * as WebGL from "./common/webgl.ts";
-import { createImagesRenderFunction } from "./images.ts";
+
+import { createRenderFunction } from "./images.ts";
 import { FRAGMENT_SHADER_FITNESS, VERTEX_SHADER_FITNESS } from "./shaders.ts";
+
+/**
+ * An interface containing the fitness function and the delete function.
+ * @typedef FitnessFunction
+ * @property call - A method that performs the fitness calculations.
+ * @property delete - A method that releases the resources.
+ */
+export type FitnessFunction = {
+  call: (vertices: Float32Array) => Float32Array;
+  delete: () => void;
+};
+
+/**
+ * An interface containing the compute function and the delete function.
+ * @typedef RenderFunction
+ * @property call - A method that performs the computing.
+ * @property delete - A method that releases the resources.
+ */
+export type ComputeFunction = {
+  call: (generated: WebGL.Texture) => void;
+  delete: () => void;
+};
 
 /**
  * Creates a fitness calculation function for a specified population. The fitness
@@ -16,7 +39,7 @@ import { FRAGMENT_SHADER_FITNESS, VERTEX_SHADER_FITNESS } from "./shaders.ts";
  * @param {WebGL.Texture} reference - The WebGL texture of the reference image.
  *
  * @throws When is unable to create WebGL resoureces.
- * @returns {WebGL.ResourceWithDeleteFunction<(vertices: Float32Array) => Float32Array>}
+ * @returns {FitnessFunction} The fitness function with the delete function.
  */
 export function createFitnessFunction(
   context: WebGL.Context,
@@ -25,7 +48,7 @@ export function createFitnessFunction(
   triangles: number,
   population: number,
   reference: WebGL.Texture,
-): WebGL.ResourceWithDeleteFunction<(vertices: Float32Array) => Float32Array> {
+): FitnessFunction {
   const [textureImages, deleteTextureImages] = WebGL
     .createTexture(
       context,
@@ -76,17 +99,17 @@ export function createFitnessFunction(
       ],
     );
 
-  const [callImagesRenderFunction, deleteImagesRenderFunction] =
-    createImagesRenderFunction(
+  const { call: callRenderFunction, delete: deleteRenderFunction } =
+    createRenderFunction(
       context,
       width * population,
       height,
-      triangles * 3,
+      triangles * population * 3,
       framebufferImages,
     );
 
-  const [callFitnessComputeFunction, deleteFitnessComputeFunction] =
-    createFitnessComputeFunction(
+  const { call: callComputeFunction, delete: deleteComputeFunction } =
+    createComputeFunction(
       context,
       width,
       height,
@@ -109,10 +132,10 @@ export function createFitnessFunction(
     return fitness;
   };
 
-  return [
-    (vertices: Float32Array): Float32Array => {
-      callImagesRenderFunction(vertices);
-      callFitnessComputeFunction(textureImages);
+  return {
+    call: (vertices: Float32Array): Float32Array => {
+      callRenderFunction(vertices);
+      callComputeFunction(textureImages);
 
       return setupFitnessFromPixels(
         WebGL.selectPixels(
@@ -127,15 +150,15 @@ export function createFitnessFunction(
         ),
       );
     },
-    (): void => {
-      deleteImagesRenderFunction();
+    delete: (): void => {
+      deleteRenderFunction();
       deleteTextureImages();
       deleteFramebufferImages();
-      deleteFitnessComputeFunction();
+      deleteComputeFunction();
       deleteTextureFitness();
       deleteFramebufferFitness();
     },
-  ];
+  };
 }
 
 /**
@@ -150,16 +173,16 @@ export function createFitnessFunction(
  * @param {WebGL.Framebuffer} framebuffer - The WebGL framebuffer used for rendering.
  *
  * @throws When is unable to create WebGL resoureces.
- * @returns {WebGL.ResourceWithDeleteFunction<(generated: WebGL.Texture) => void>}
+ * @returns {ComputeFunction} The compute function with the delete function.
  */
-export function createFitnessComputeFunction(
+export function createComputeFunction(
   context: WebGL.Context,
   width: number,
   height: number,
   population: number,
   reference: WebGL.Texture,
   framebuffer?: WebGL.Framebuffer,
-): WebGL.ResourceWithDeleteFunction<(generated: WebGL.Texture) => void> {
+): ComputeFunction {
   const [vertexShader, deleteVertexShader] = WebGL
     .createShader(
       context,
@@ -188,6 +211,12 @@ export function createFitnessComputeFunction(
       .selectUniform(context, shaderProgram, "texture_reference"),
     texture_generated: WebGL
       .selectUniform(context, shaderProgram, "texture_generated"),
+    width: WebGL
+      .selectUniform(context, shaderProgram, "width"),
+    height: WebGL
+      .selectUniform(context, shaderProgram, "height"),
+    population: WebGL
+      .selectUniform(context, shaderProgram, "population"),
   };
 
   const [vertexBuffer, deleteVertexBuffer] = WebGL
@@ -224,8 +253,8 @@ export function createFitnessComputeFunction(
       ],
     );
 
-  return [
-    (generated: WebGL.Texture): void => {
+  return {
+    call: (generated: WebGL.Texture): void => {
       WebGL.drawArrays(
         context,
         shaderProgram,
@@ -272,16 +301,37 @@ export function createFitnessComputeFunction(
                 x: 1,
               },
             },
+            {
+              type: WebGL.UNIFORM_FLOAT,
+              location: uniforms.width,
+              value: {
+                x: width,
+              },
+            },
+            {
+              type: WebGL.UNIFORM_FLOAT,
+              location: uniforms.height,
+              value: {
+                x: height,
+              },
+            },
+            {
+              type: WebGL.UNIFORM_FLOAT,
+              location: uniforms.population,
+              value: {
+                x: population,
+              },
+            },
           ],
         },
       );
     },
-    (): void => {
+    delete: (): void => {
       deleteVertexShader();
       deleteFragmentShader();
       deleteVertexArray();
       deleteVertexBuffer();
       deleteShaderProgram();
     },
-  ];
+  };
 }
