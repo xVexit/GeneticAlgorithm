@@ -41,7 +41,10 @@ export function createAlgorithmFunction(
   elimination: number,
   reference: HTMLImageElement,
 ): AlgorithmFunction {
-  const vertices: Float32Array = createVertices(triangles, population);
+  const vertices = new Float32Array(population * triangles * TRIANGLE_LENGTH);
+  for (let i = 0; i < vertices.length; i++) {
+    vertices[i] = Math.random();
+  }
 
   const [texture, deleteTexture] = WebGL
     .createTextureFromImage(
@@ -68,12 +71,9 @@ export function createAlgorithmFunction(
   return {
     call: (): [Float32Array, Float32Array] => {
       const fitness = callFitnessFunction(vertices);
-      const threshold = selectFitnessEliminationThreshold(fitness, elimination);
 
       for (let i = 0; i < population; i++) {
-        if (fitness[i] < threshold) {
-          // TODO: Launch the crossover and mutation!
-        }
+        // TODO: Launch the crossover and mutation!
       }
 
       return [fitness, vertices];
@@ -83,34 +83,4 @@ export function createAlgorithmFunction(
       deleteFitnessFunction();
     },
   };
-}
-
-function selectFitnessEliminationThreshold(
-  array: Float32Array,
-  elimination: number,
-): number {
-  return [...array].sort((a, b) => b - a)[elimination * (array.length - 1)];
-}
-
-function createVertices(triangles: number, population: number): Float32Array {
-  const vertices = new Float32Array(triangles * population * TRIANGLE_LENGTH);
-
-  for (let i = 0; i < population; i++) {
-    const offset = i * triangles * TRIANGLE_LENGTH;
-    for (let j = 0; j < triangles * TRIANGLE_LENGTH; j++) {
-      switch (j % VERTEX_LENGTH) {
-        case 0:
-          vertices[offset + j] = (Math.random() + i) / population * 2.0 - 1.0;
-          break;
-        case 1:
-          vertices[offset + j] = Math.random() * 2.0 - 1.0;
-          break;
-        default:
-          vertices[offset + j] = Math.random();
-          break;
-      }
-    }
-  }
-
-  return vertices;
 }
