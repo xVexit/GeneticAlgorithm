@@ -1,38 +1,45 @@
 /**
- * Mutates an individual by altering its vertices.
+ * Mutates all vertices (x, y, r, g, b, a) in a single individual using getRandomPosition.
  *
- * @param {Float32Array} individual - the individual to mutate.
- * @param {num} mutationRate - probability of mutation for each vertex
- * @param {num} width - the width of the canvas
- * @param {num} height - the height of the canvas
- * @param {num} population - size of population
- * @returns {Float32Array} - The mutated individual.
+ * @param {Float32Array} population - The array representing the entire population.
+ * @param {number} index - The index of the individual to mutate.
+ * @param {number} triangles - Number of triangles per individual.
+ * @param {number} mutationRate - Probability of mutation for each gene.
+ * @param {number} populationSize - Total number of individuals in the population.
+ * @returns {Float32Array} - The updated population array with the mutated individual.
  */
 export function mutate(
-  vertices: Float32Array,
+  population: Float32Array,
+  index: number,
+  triangles: number,
   mutationRate: number,
-  population: number,
+  populationSize: number,
 ): Float32Array {
-  const verticesPerIndividual = vertices.length / population;
-  for (let i = 0; i < vertices.length; i += 6) {
-    const offset = Math.floor(i / verticesPerIndividual / 6);
-    // random values for cordinates
-    if (Math.random() < mutationRate) {
-      vertices[i] = getRandomPosition(population, offset);
-    }
-    if (Math.random() < mutationRate) {
-      vertices[i + 1] = getRandomPosition(population, offset);
-    }
+  const VERTEX_LENGTH = 6;
+  const TRIANGLE_LENGTH = VERTEX_LENGTH * 3;
+  const individualOffset = index * triangles * TRIANGLE_LENGTH;
 
-    // random value for colors
-    for (let j = 0; j < 4; j++) {
-      if (Math.random() < mutationRate) {
-        vertices[j + 2 + i] = Math.random();
+  for (let j = 0; j < triangles * TRIANGLE_LENGTH; j++) {
+    if (Math.random() < mutationRate) {
+      const geneIndex = j % VERTEX_LENGTH;
+      const vertexOffset = individualOffset + j;
+
+      switch (geneIndex) {
+        case 0:
+          population[vertexOffset] = getRandomPosition(populationSize, index);
+          break;
+        case 1:
+          population[vertexOffset] = Math.random() * 2.0 - 1.0;
+          break;
+        default:
+          population[vertexOffset] = Math.random();
+          break;
       }
     }
   }
-  return vertices;
+  return population;
 }
+
 /**
  * Generates a random position within a specific range for an individual
  * in a population, based on the size of the population and the individual's offset.
@@ -56,7 +63,5 @@ export function getRandomPosition(
   population: number,
   offset: number,
 ): number {
-  const range = 2 / population;
-  const start = -1;
-  return Math.random() * range + offset + start;
+  return (Math.random() + offset) / population * 2.0 - 1.0;
 }

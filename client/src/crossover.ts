@@ -1,30 +1,55 @@
 /**
- * Performs one-point crossover between two individuals
+ * Performs a crossover between two individuals and produces a single offspring.
  *
- * @param {Float32Array} parent1 - The first parent
- * @param {Float32Array} parent2 - The secont parent
- * @returns { Float32Array } - offspring
+ * @param {Float32Array} population - The array representing the entire population.
+ * @param {number} indexA - The index of the first parent in the population.
+ * @param {number} indexB - The index of the second parent in the population.
+ * @param {number} trianglesPerIndividual - The number of triangles per individual.
+ * @param {number} indexOutput - The index where the offspring will be stored.
+ * @returns {Float32Array} - The updated population array with the offspring added.
  */
 export function crossover(
-  parent1: Float32Array,
-  parent2: Float32Array,
+  population: Float32Array,
+  indexA: number,
+  indexB: number,
+  trianglesPerIndividual: number,
+  indexOutput: number,
 ): Float32Array {
-  if (parent1.length !== parent2.length) {
-    throw new Error(
-      "Parents arrays must have the same length!!!!!!",
-    );
-  }
+  const VERTEX_LENGTH = 6;
+  const TRIANGLE_LENGTH = VERTEX_LENGTH * 3;
+  const individualSize = TRIANGLE_LENGTH * trianglesPerIndividual;
 
-  const crossoverPoint = Math.floor(Math.random() * parent1.length);
+  const startA = indexA * individualSize;
+  const startB = indexB * individualSize;
+  const startOutput = indexOutput * individualSize;
 
-  const offspring = new Float32Array(parent1.length);
+  const parentAOffset = indexA / population.length * 2.0 - 1.0;
+  const parentBOffset = indexB / population.length * 2.0 - 1.0;
+  const outputOffset = indexOutput / population.length * 2.0 - 1.0;
 
-  for (let i = 0; i < parent1.length; i++) {
+  const crossoverPoint = Math.floor(Math.random() * (individualSize - 1));
+
+  for (let i = 0; i < individualSize; i++) {
+    const geneIndex = i % VERTEX_LENGTH;
     if (i < crossoverPoint) {
-      offspring[i] = parent1[i];
+      switch (geneIndex) {
+        case 0:
+          population[startOutput + i] = population[startA + i] - parentAOffset +
+            outputOffset;
+          break;
+        default:
+          population[startOutput + i] = population[startA + i];
+      }
     } else {
-      offspring[i] = parent2[i];
+      switch (geneIndex) {
+        case 0:
+          population[startOutput + i] = population[startB + i] - parentBOffset +
+            outputOffset;
+          break;
+        default:
+          population[startOutput + i] = population[startB + i];
+      }
     }
   }
-  return offspring;
+  return population;
 }
