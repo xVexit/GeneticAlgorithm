@@ -32,6 +32,22 @@ export const UNSIGNED_INT = DataType.UNSIGNED_INT;
 export const FLOAT = DataType.FLOAT;
 
 /**
+ * Enumeration representing alpha bledning functions supported by WebGL.
+ * @enum {number} AlphaBlending
+ */
+export const enum AlphaBlending {
+  SRC_ALPHA = 0x0302,
+  ONE_MINUS_SRC_ALPHA = 0x0303,
+  DST_ALPHA = 0x0304,
+  ONE_MINUS_DST_ALPHA = 0x0305,
+}
+
+export const SRC_ALPHA = AlphaBlending.SRC_ALPHA;
+export const ONE_MINUS_SRC_ALPHA = AlphaBlending.ONE_MINUS_SRC_ALPHA;
+export const DST_ALPHA = AlphaBlending.DST_ALPHA;
+export const ONE_MINUS_DST_ALPHA = AlphaBlending.ONE_MINUS_DST_ALPHA;
+
+/**
  * Enumeration representing pixel formats supported by WebGL.
  * @enum {number} PixelFormat
  */
@@ -562,6 +578,20 @@ export function updateBuffer(
     options.offset || 0,
     data,
   );
+}
+
+/**
+ * Enables alpha blending using specified blending function.
+ *
+ * @param context - The WebGL context.
+ * @param blending - The WebGL alpha blending function.
+ */
+export function enableAlphaBlending(
+  context: Context,
+  blending: AlphaBlending,
+): void {
+  context.enable(context.BLEND);
+  context.blendFunc(context.SRC_ALPHA, blending);
 }
 
 /**
