@@ -18,7 +18,8 @@ export type RenderFunction = {
  * @param {WebGL.Context} context - The WebGL context used for rendering.
  * @param {number} width - The width of the viewport in pixels.
  * @param {number} height - The height of the viewport in pixels.
- * @param {nubmer} vertices - The number of vertices.
+ * @param {nubmer} triangles - The number of triangles.
+ * @param {nubmer} population - The number of inviduals.
  * @param {WebGL.Framebuffer} framebuffer - The WebGL framebuffer used for rendering.
  *
  * @throws When is unable to create WebGL resources.
@@ -28,7 +29,8 @@ export function createRenderFunction(
   context: WebGL.Context,
   width: number,
   height: number,
-  vertices: number,
+  triangles: number,
+  population: number,
   framebuffer?: WebGL.Framebuffer,
 ): RenderFunction {
   const [vertexShader, deleteVertexShader] = WebGL
@@ -54,10 +56,17 @@ export function createRenderFunction(
       ],
     );
 
+  const uniforms = {
+    triangles: WebGL
+      .selectUniform(context, shaderProgram, "triangles"),
+    population: WebGL
+      .selectUniform(context, shaderProgram, "population"),
+  };
+
   const [vertexBuffer, deleteVertexBuffer] = WebGL
     .createBuffer(
       context,
-      vertices * 6 * Float32Array.BYTES_PER_ELEMENT,
+      triangles * population * 18 * Float32Array.BYTES_PER_ELEMENT,
       {
         type: WebGL.ARRAY_BUFFER,
         usage: WebGL.DYNAMIC_DRAW,
@@ -92,7 +101,7 @@ export function createRenderFunction(
         context,
         shaderProgram,
         vertexArray,
-        vertices,
+        triangles * population * 3,
         {
           framebuffer: framebuffer,
           viewport: {
@@ -107,6 +116,22 @@ export function createRenderFunction(
               a: 1,
             },
           },
+          uniforms: [
+            {
+              type: WebGL.UNIFORM_FLOAT,
+              location: uniforms.triangles,
+              value: {
+                x: triangles,
+              },
+            },
+            {
+              type: WebGL.UNIFORM_FLOAT,
+              location: uniforms.population,
+              value: {
+                x: population,
+              },
+            },
+          ],
         },
       );
     },

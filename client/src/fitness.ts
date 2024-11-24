@@ -49,11 +49,14 @@ export function createFitnessFunction(
   population: number,
   reference: WebGL.Texture,
 ): FitnessFunction {
+  const matrixWidth = Math.min(population, 64);
+  const matrixHeight = Math.ceil(population / 64);
+
   const [textureImages, deleteTextureImages] = WebGL
     .createTexture(
       context,
-      width * population,
-      height,
+      width * matrixWidth,
+      height * matrixHeight,
       {
         format: WebGL.RGBA,
         filters: {
@@ -77,8 +80,8 @@ export function createFitnessFunction(
   const [textureFitness, deleteTextureFitness] = WebGL
     .createTexture(
       context,
-      width * population,
-      1,
+      width * matrixWidth,
+      matrixHeight,
       {
         format: WebGL.RGBA,
         filters: {
@@ -102,9 +105,10 @@ export function createFitnessFunction(
   const { call: callRenderFunction, delete: deleteRenderFunction } =
     createRenderFunction(
       context,
-      width * population,
-      height,
-      triangles * population * 3,
+      width * matrixWidth,
+      height * matrixHeight,
+      triangles,
+      population,
       framebufferImages,
     );
 
@@ -141,8 +145,8 @@ export function createFitnessFunction(
         WebGL.selectPixels(
           context,
           framebufferFitness,
-          width * population,
-          1,
+          width * matrixWidth,
+          matrixHeight,
           {
             type: WebGL.UNSIGNED_BYTE,
             format: WebGL.RGBA,
@@ -183,6 +187,9 @@ export function createComputeFunction(
   reference: WebGL.Texture,
   framebuffer?: WebGL.Framebuffer,
 ): ComputeFunction {
+  const matrixWidth = Math.min(population, 64);
+  const matrixHeight = Math.ceil(population / 64);
+
   const [vertexShader, deleteVertexShader] = WebGL
     .createShader(
       context,
@@ -265,8 +272,8 @@ export function createComputeFunction(
           viewport: {
             x: 0,
             y: 0,
-            width: width * population,
-            height: 1,
+            width: width * matrixWidth,
+            height: matrixHeight,
           },
           clear: {
             color: {
