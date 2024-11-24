@@ -61,9 +61,9 @@ function setupPopulationSliderElement(): void {
   setupSliderUpdateCallback(
     SLIDER_POPULATION,
     (value: number) => {
-      application.population = value || 1;
+      application.population = Math.pow(2, value);
       if (title) {
-        title.innerText = `POPULATION (${value || 1})`;
+        title.innerText = `POPULATION (${Math.pow(2, value)})`;
       }
     },
   );
@@ -196,6 +196,7 @@ function setupImageGeneratedElement(): void {
 
     const context = canvas.getContext("webgl2");
     if (context) {
+      WebGL.enableAlphaBlending(context, WebGL.ONE_MINUS_SRC_ALPHA);
       // TODO: Launch the genetic algorithm!
     } else {
       throw new Error("WebGL2 isn't supported!");
