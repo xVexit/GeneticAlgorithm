@@ -12,7 +12,7 @@ export function mutate(
   index: number,
   triangles: number,
   mutationRate: number,
-): Float32Array {
+): void {
   const VERTEX_LENGTH = 6;
   const TRIANGLE_LENGTH = VERTEX_LENGTH * 3;
   const individualOffset = index * triangles * TRIANGLE_LENGTH;
@@ -23,5 +23,4 @@ export function mutate(
       population[vertexOffset] = Math.random();
     }
   }
-  return population;
 }
