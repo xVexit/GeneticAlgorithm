@@ -1,7 +1,7 @@
 import * as WebGL from "./common/webgl.ts";
 
-import { RenderFunction } from "./images.ts";
-import { AlgorithmFunction } from "./algorithm.ts";
+import { createRenderFunction, RenderFunction } from "./images.ts";
+import { AlgorithmFunction, createAlgorithmFunction } from "./algorithm.ts";
 
 const SLIDER_POPULATION: string = "#slider-population";
 const SLIDER_POPULATION_TITLE: string = "#slider-population-title";
@@ -11,8 +11,8 @@ const SLIDER_MUTATION: string = "#slider-mutation";
 const SLIDER_MUTATION_TITLE: string = "#slider-mutation-title";
 const SLIDER_RESOLUTION: string = "#slider-resolution";
 const SLIDER_RESOLUTION_TITLE: string = "#slider-resolution-title";
-const SLIDER_ELIMINATION: string = "#slider-elimination";
-const SLIDER_ELIMINATION_TITLE: string = "#slider-elimination-title";
+const SLIDER_TOURNAMENT: string = "#slider-tournament";
+const SLIDER_TOURNAMENT_TITLE: string = "#slider-tournament-title";
 
 const CONTENT_IMAGE_UPLOAD: string = "#content-image-upload";
 const CONTENT_IMAGE_REFERENCE: string = "#content-image-reference";
@@ -23,7 +23,7 @@ interface Application {
   population: number;
   mutation: number;
   resolution: number;
-  elimination: number;
+  tournament: number;
   update: RenderFunction | null;
   algorithm: AlgorithmFunction | null;
 }
@@ -33,7 +33,7 @@ const application: Application = {
   population: 0,
   mutation: 0,
   resolution: 0,
-  elimination: 0,
+  tournament: 0,
   update: null,
   algorithm: null,
 };
@@ -93,22 +93,22 @@ function setupMutationSliderElement(): void {
     (value: number) => {
       application.mutation = value;
       if (title) {
-        title.innerText = `MUTATION (${value})`;
+        title.innerText = `MUTATION (${Math.floor(value * 10000.0) / 100.0}%)`;
       }
     },
   );
 }
 
-function setupEliminationSliderElement(): void {
-  const title = document.querySelector(SLIDER_ELIMINATION_TITLE) as
+function setupTournamentSliderElement(): void {
+  const title = document.querySelector(SLIDER_TOURNAMENT_TITLE) as
     | HTMLHeadingElement
     | null;
   setupSliderUpdateCallback(
-    SLIDER_ELIMINATION,
+    SLIDER_TOURNAMENT,
     (value: number) => {
-      application.elimination = value;
+      application.tournament = value;
       if (title) {
-        title.innerText = `ELIMINATION (${Math.floor(value * 100)}%)`;
+        title.innerText = `TOURNAMENT (${value})`;
       }
     },
   );
@@ -197,10 +197,44 @@ function setupImageGeneratedElement(): void {
     const context = canvas.getContext("webgl2");
     if (context) {
       WebGL.enableAlphaBlending(context, WebGL.ONE_MINUS_SRC_ALPHA);
-      // TODO: Launch the genetic algorithm!
+      setupUpdateFunction(context);
+      setupAlgorithmFunction(context);
     } else {
       throw new Error("WebGL2 isn't supported!");
     }
+  }
+}
+
+function setupUpdateFunction(context: WebGL.Context): void {
+  const canvas = document.querySelector(CONTENT_IMAGE_GENERATED) as
+    | HTMLCanvasElement
+    | null;
+  if (canvas) {
+    application.update = createRenderFunction(
+      context,
+      canvas.width,
+      canvas.height,
+      application.triangles,
+      1,
+    );
+  }
+}
+
+function setupAlgorithmFunction(context: WebGL.Context): void {
+  const image = document.querySelector(CONTENT_IMAGE_REFERENCE) as
+    | HTMLImageElement
+    | null;
+  if (image) {
+    application.algorithm = createAlgorithmFunction(
+      context,
+      application.resolution,
+      application.resolution,
+      application.triangles,
+      application.population,
+      application.mutation,
+      application.tournament,
+      image,
+    );
   }
 }
 
@@ -211,14 +245,19 @@ self.addEventListener("load", () => {
   setupPopulationSliderElement();
   setupTrianglesSliderElement();
   setupMutationSliderElement();
-  setupEliminationSliderElement();
+  setupTournamentSliderElement();
   setupResolutionSliderElement();
 
   setInterval(() => {
     if (application.algorithm) {
       const [fitness, vertices] = application.algorithm.call();
       if (application.update) {
-        application.update.call(vertices);
+        application.update.call(
+          vertices.subarray(
+            0,
+            application.triangles * 18,
+          ),
+        );
       }
     }
   }, 0);
