@@ -61,7 +61,7 @@ vec3 colorAverageFitness(vec2 pixel, vec2 dimensions) {
 
     for(float y = 0.0; y < height; y++) {
         total += abs(
-            texture(texture_reference, vec2(fract(pixel.x / width), fract(y / height))).xyz
+            texture(texture_reference, vec2(fract(pixel.x / width), 1.0 - fract(y / height))).xyz
                 - texture(texture_generated, vec2(pixel.x, pixel.y + y) / dimensions).xyz
         );
     }
