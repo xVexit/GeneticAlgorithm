@@ -22,6 +22,15 @@ const CONTENT_IMAGE_UPLOAD: string = "#content-image-upload";
 const CONTENT_IMAGE_REFERENCE: string = "#content-image-reference";
 const CONTENT_IMAGE_GENERATED: string = "#content-image-generated";
 
+const SLIDERS = [
+  SLIDER_POPULATION,
+  SLIDER_TRIANGLES,
+  SLIDER_MUTATION,
+  SLIDER_RESOLUTION,
+  SLIDER_POPULATION,
+  SLIDER_TOURNAMENT,
+];
+
 interface Application {
   triangles: number;
   population: number;
@@ -59,6 +68,15 @@ function setupSliderUpdateCallback(
         updateCallback(parseFloat(value));
       }
     });
+  }
+}
+
+function disableSliderElements(): void {
+  for (const slider of SLIDERS) {
+    const element = document.querySelector(slider) as HTMLInputElement | null;
+    if (element) {
+      element.disabled = true;
+    }
   }
 }
 
@@ -205,6 +223,7 @@ function setupImageGeneratedElement(): void {
     const context = canvas.getContext("webgl2");
     if (context) {
       WebGL.enableAlphaBlending(context, WebGL.ONE_MINUS_SRC_ALPHA);
+      disableSliderElements();
       setupUpdateFunction(context);
       setupAlgorithmFunction(context);
     } else {
