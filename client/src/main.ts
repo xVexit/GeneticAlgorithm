@@ -14,6 +14,10 @@ const SLIDER_RESOLUTION_TITLE: string = "#slider-resolution-title";
 const SLIDER_TOURNAMENT: string = "#slider-tournament";
 const SLIDER_TOURNAMENT_TITLE: string = "#slider-tournament-title";
 
+const GENERATIONS: string = "#generations";
+const FITNESS: string = "#fitness";
+const PERFORMANCE: string = "#performance";
+
 const CONTENT_IMAGE_UPLOAD: string = "#content-image-upload";
 const CONTENT_IMAGE_REFERENCE: string = "#content-image-reference";
 const CONTENT_IMAGE_GENERATED: string = "#content-image-generated";
@@ -24,6 +28,8 @@ interface Application {
   mutation: number;
   resolution: number;
   tournament: number;
+  timepoint: number;
+  genrations: number;
   update: RenderFunction | null;
   algorithm: AlgorithmFunction | null;
 }
@@ -34,6 +40,8 @@ const application: Application = {
   mutation: 0,
   resolution: 0,
   tournament: 0,
+  timepoint: 0,
+  genrations: 0,
   update: null,
   algorithm: null,
 };
@@ -225,6 +233,7 @@ function setupAlgorithmFunction(context: WebGL.Context): void {
     | HTMLImageElement
     | null;
   if (image) {
+    application.timepoint = performance.now();
     application.algorithm = createAlgorithmFunction(
       context,
       application.resolution,
@@ -235,6 +244,40 @@ function setupAlgorithmFunction(context: WebGL.Context): void {
       application.tournament,
       image,
     );
+  }
+}
+
+function updateGenerationsElement(): void {
+  const element = document.querySelector(GENERATIONS) as
+    | HTMLHeadingElement
+    | null;
+  if (element) {
+    element.textContent = `${application.genrations}`;
+  }
+}
+
+function updateFitnessElement(fitness: Float32Array): void {
+  const element = document.querySelector(FITNESS) as
+    | HTMLHeadingElement
+    | null;
+  if (element) {
+    element.textContent = `${
+      (fitness.reduce((maximum, value) => Math.max(maximum, value)) / 255.0)
+        .toFixed(8)
+    }`;
+  }
+}
+
+function updatePerformanceElement(): void {
+  const element = document.querySelector(PERFORMANCE) as
+    | HTMLHeadingElement
+    | null;
+  if (element) {
+    const duration = (performance.now() - application.timepoint) / 1000.0;
+    element.textContent = `${
+      (application.genrations / duration)
+        .toFixed(3)
+    } / S`;
   }
 }
 
@@ -252,6 +295,12 @@ self.addEventListener("load", () => {
     if (application.algorithm) {
       const [fitness, vertices] = application.algorithm.call();
       if (application.update) {
+        application.genrations++;
+
+        updateGenerationsElement();
+        updateFitnessElement(fitness);
+        updatePerformanceElement();
+
         application.update.call(
           vertices.subarray(
             0,
