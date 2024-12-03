@@ -74,8 +74,16 @@ export function createAlgorithmFunction(
     call: (): [Float32Array, Float32Array] => {
       const verticesParents = new Float32Array(vertices);
       const fitness = callFitnessFunction(vertices);
+      const winnerOffset = Math.floor(selectWithHighestFitness(fitness)) *
+        triangles * TRIANGLE_LENGTH;
 
-      for (let i = 0; i < population; i++) {
+      if (winnerOffset != 0) {
+        for (let i = 0; i < triangles * TRIANGLE_LENGTH; i++) {
+          vertices[i] = verticesParents[winnerOffset + i];
+        }
+      }
+
+      for (let i = 1; i < population; i++) {
         crossover(
           verticesParents,
           vertices,
@@ -101,12 +109,24 @@ export function createAlgorithmFunction(
   };
 }
 
+function selectWithHighestFitness(fitness: Float32Array): number {
+  let winnerIndex = 0;
+
+  for (let i = 1; i < fitness.length; i++) {
+    if (fitness[i] >= fitness[winnerIndex]) {
+      winnerIndex = i;
+    }
+  }
+
+  return winnerIndex;
+}
+
 function selectWithTournament(fitness: Float32Array, samples: number): number {
   let winnerIndex = Math.floor(Math.random() * (fitness.length - 1));
 
   for (let i = 1; i < samples; i++) {
     const index = Math.floor(Math.random() * (fitness.length - 1));
-    if (fitness[index] > fitness[winnerIndex]) {
+    if (fitness[index] >= fitness[winnerIndex]) {
       winnerIndex = index;
     }
   }
